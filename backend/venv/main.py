@@ -76,3 +76,71 @@ def stock(symbol: str):
         return {
             "error": "Stock not found"
         }
+@app.get("/stocks")
+def get_stocks():
+
+    stocks = [
+        "TCS",
+        "INFY",
+        "RELIANCE",
+        "SBIN",
+        "HDFCBANK",
+        "ICICIBANK",
+        "LT",
+        "ITC",
+        "WIPRO",
+        "AXISBANK",
+        "KOTAKBANK",
+        "BAJFINANCE",
+        "MARUTI",
+        "SUNPHARMA",
+        "ULTRACEMCO",
+        "TITAN",
+        "POWERGRID",
+        "NTPC",
+        "ONGC",
+        "TATAMOTORS"
+    ]
+
+    result = []
+
+    for symbol in stocks:
+
+        try:
+
+            ticker = yf.Ticker(f"{symbol}.NS")
+
+            hist = ticker.history(
+                period="1d",
+                interval="1m"
+            )
+
+            if hist.empty:
+                continue
+
+            latest = round(
+                hist["Close"].iloc[-1],
+                2
+            )
+
+            open_price = round(
+                hist["Open"].iloc[-1],
+                2
+            )
+
+            percent = round(
+                ((latest - open_price) /
+                 open_price) * 100,
+                2
+            )
+
+            result.append({
+                "symbol": symbol,
+                "price": latest,
+                "percent": percent
+            })
+
+        except:
+            pass
+
+    return result
