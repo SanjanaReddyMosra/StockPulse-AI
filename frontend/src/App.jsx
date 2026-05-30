@@ -11,6 +11,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [stocks, setStocks] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState("");
 
   const fetchStock = async (stockSymbol) => {
 
@@ -23,6 +24,7 @@ function App() {
         await API.get(`/stock/${stockSymbol}`);
 
       setStock(response.data);
+      setLastUpdated(new Date().toLocaleTimeString());
 
     } catch (err) {
 
@@ -53,10 +55,19 @@ function App() {
 
   useEffect(() => {
 
-    fetchStock("TCS");
+  fetchStock("TCS");
+  fetchMarketStocks();
+
+  const interval = setInterval(() => {
+
+    fetchStock(symbol);
     fetchMarketStocks();
 
-  }, []);
+  }, 60000);
+
+  return () => clearInterval(interval);
+
+}, [symbol]);
 
   return (
 
@@ -69,6 +80,10 @@ function App() {
       <p className="text-slate-400 mt-3">
         Real-Time Indian Stock Analytics
       </p>
+
+      <p className="text-green-400 mt-2">
+  Last Updated: {lastUpdated}
+</p>
 
       {/* Search Bar */}
 
@@ -230,7 +245,16 @@ function App() {
           Market Overview
         </h2>
 
-        <MarketGrid stocks={stocks} />
+       <MarketGrid
+  stocks={stocks}
+  onSelectStock={(selected) => {
+
+    setSymbol(selected);
+
+    fetchStock(selected);
+
+  }}
+/>
 
       </div>
 

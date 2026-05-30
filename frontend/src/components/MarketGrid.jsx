@@ -1,4 +1,7 @@
-function MarketGrid({ stocks }) {
+function MarketGrid({
+  stocks,
+  onSelectStock
+}) {
 
   return (
 
@@ -8,7 +11,17 @@ function MarketGrid({ stocks }) {
 
         <div
           key={stock.symbol}
-          className="bg-slate-900 border border-slate-800 p-4 rounded-xl hover:border-blue-500 transition"
+          onClick={() =>
+            onSelectStock(stock.symbol)
+          }
+          className="
+            bg-slate-900
+            border border-slate-800
+            p-4 rounded-xl
+            cursor-pointer
+            hover:border-blue-500
+            transition
+          "
         >
 
           <h3 className="font-bold text-lg">
