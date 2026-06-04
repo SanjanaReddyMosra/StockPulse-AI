@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 
+from ta.momentum import RSIIndicator
+from ta.trend import SMAIndicator
+
 app = FastAPI()
 
 # CORS
@@ -13,11 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def home():
     return {
         "message": "StockPulse AI Backend Running"
     }
+
 
 @app.get("/stock/{symbol}")
 def stock(symbol: str):
@@ -27,29 +32,102 @@ def stock(symbol: str):
         ticker = yf.Ticker(f"{symbol}.NS")
 
         hist = ticker.history(
-            period="1d",
-            interval="1m"
+            period="3mo",
+            interval="1d"
         )
 
+        if hist.empty:
+            return {
+                "error": "Stock not found"
+            }
+
         latest_price = round(
-            hist["Close"].iloc[-1], 2
+            hist["Close"].iloc[-1],
+            2
         )
 
         open_price = round(
-            hist["Open"].iloc[-1], 2
+            hist["Open"].iloc[-1],
+            2
         )
 
         high_price = round(
-            hist["High"].iloc[-1], 2
+            hist["High"].iloc[-1],
+            2
         )
 
         low_price = round(
-            hist["Low"].iloc[-1], 2
+            hist["Low"].iloc[-1],
+            2
         )
 
         volume = int(
             hist["Volume"].iloc[-1]
         )
+
+        # RSI
+
+        rsi_indicator = RSIIndicator(
+            close=hist["Close"],
+            window=14
+        )
+
+        rsi = round(
+            rsi_indicator.rsi().iloc[-1],
+            2
+        )
+
+        # SMA20
+
+        sma20_indicator = SMAIndicator(
+            close=hist["Close"],
+            window=20
+        )
+
+        sma20 = round(
+            sma20_indicator.sma_indicator().iloc[-1],
+            2
+        )
+
+        # SMA50
+
+        sma50_indicator = SMAIndicator(
+            close=hist["Close"],
+            window=50
+        )
+
+        sma50 = round(
+            sma50_indicator.sma_indicator().iloc[-1],
+            2
+        )
+
+        # Trend
+
+        trend = (
+            "Bullish"
+            if sma20 > sma50
+            else "Bearish"
+        )
+
+        signal = "HOLD"
+        confidence = 50
+        reason = "Market Neutral"
+        if trend == "Bullish" and rsi < 30:
+            signal = "BUY"
+            confidence = 85
+            reason = "Oversold RSI with Bullish Trend"
+        elif trend == "Bearish" and rsi > 70:
+            signal = "SELL"
+            confidence = 85
+            reason = "Overbought RSI with Bearish Trend"
+        elif trend == "Bullish":
+            signal = "BUY"
+            confidence = 70
+            reason = "Bullish Moving Average Trend"
+        elif trend == "Bearish":
+            signal = "SELL"
+            confidence = 70
+            reason = "Bearish Moving Average Trend"
 
         change = round(
             latest_price - open_price,
@@ -69,13 +147,23 @@ def stock(symbol: str):
             "low": low_price,
             "volume": volume,
             "change": change,
-            "percent": percent
+            "percent": percent,
+            "rsi": rsi,
+            "sma20": sma20,
+            "sma50": sma50,
+            "trend": trend,
+            "signal": signal,
+            "confidence": confidence,
+            "reason": reason
         }
 
-    except:
+    except Exception as e:
+
         return {
-            "error": "Stock not found"
+            "error": str(e)
         }
+
+
 @app.get("/stocks")
 def get_stocks():
 
@@ -108,7 +196,9 @@ def get_stocks():
 
         try:
 
-            ticker = yf.Ticker(f"{symbol}.NS")
+            ticker = yf.Ticker(
+                f"{symbol}.NS"
+            )
 
             hist = ticker.history(
                 period="1d",
@@ -129,8 +219,10 @@ def get_stocks():
             )
 
             percent = round(
-                ((latest - open_price) /
-                 open_price) * 100,
+                (
+                    (latest - open_price)
+                    / open_price
+                ) * 100,
                 2
             )
 

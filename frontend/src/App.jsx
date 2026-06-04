@@ -24,7 +24,10 @@ function App() {
         await API.get(`/stock/${stockSymbol}`);
 
       setStock(response.data);
-      setLastUpdated(new Date().toLocaleTimeString());
+
+      setLastUpdated(
+        new Date().toLocaleTimeString()
+      );
 
     } catch (err) {
 
@@ -55,19 +58,19 @@ function App() {
 
   useEffect(() => {
 
-  fetchStock("TCS");
-  fetchMarketStocks();
-
-  const interval = setInterval(() => {
-
-    fetchStock(symbol);
+    fetchStock("TCS");
     fetchMarketStocks();
 
-  }, 60000);
+    const interval = setInterval(() => {
 
-  return () => clearInterval(interval);
+      fetchStock(symbol);
+      fetchMarketStocks();
 
-}, [symbol]);
+    }, 60000);
+
+    return () => clearInterval(interval);
+
+  }, [symbol]);
 
   return (
 
@@ -82,8 +85,8 @@ function App() {
       </p>
 
       <p className="text-green-400 mt-2">
-  Last Updated: {lastUpdated}
-</p>
+        Last Updated: {lastUpdated}
+      </p>
 
       {/* Search Bar */}
 
@@ -110,13 +113,22 @@ function App() {
 
       <div className="flex gap-3 mt-4 flex-wrap">
 
-        {["TCS", "INFY", "RELIANCE", "SBIN", "HDFCBANK"].map((s) => (
+        {[
+          "TCS",
+          "INFY",
+          "RELIANCE",
+          "SBIN",
+          "HDFCBANK"
+        ].map((s) => (
 
           <button
             key={s}
             onClick={() => {
+
               setSymbol(s);
+
               fetchStock(s);
+
             }}
             className="bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700"
           >
@@ -193,12 +205,15 @@ function App() {
 
           </div>
 
+          {/* Price Information */}
+
           <div className="grid md:grid-cols-4 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl">
               <p className="text-slate-400">
                 Open
               </p>
+
               <h3 className="text-xl mt-2">
                 ₹ {stock.open}
               </h3>
@@ -208,6 +223,7 @@ function App() {
               <p className="text-slate-400">
                 High
               </p>
+
               <h3 className="text-xl mt-2">
                 ₹ {stock.high}
               </h3>
@@ -217,6 +233,7 @@ function App() {
               <p className="text-slate-400">
                 Low
               </p>
+
               <h3 className="text-xl mt-2">
                 ₹ {stock.low}
               </h3>
@@ -226,12 +243,105 @@ function App() {
               <p className="text-slate-400">
                 Volume
               </p>
+
               <h3 className="text-xl mt-2">
                 {stock.volume}
               </h3>
             </div>
 
           </div>
+
+          {/* Technical Indicators */}
+
+          <div className="grid md:grid-cols-4 gap-4 mt-8">
+
+            <div className="bg-slate-800 p-4 rounded-xl">
+
+              <p className="text-slate-400">
+                RSI
+              </p>
+
+              <h3 className="text-xl mt-2">
+                {stock.rsi}
+              </h3>
+
+            </div>
+
+            <div className="bg-slate-800 p-4 rounded-xl">
+
+              <p className="text-slate-400">
+                SMA20
+              </p>
+
+              <h3 className="text-xl mt-2">
+                ₹ {stock.sma20}
+              </h3>
+
+            </div>
+
+            <div className="bg-slate-800 p-4 rounded-xl">
+
+              <p className="text-slate-400">
+                SMA50
+              </p>
+
+              <h3 className="text-xl mt-2">
+                ₹ {stock.sma50}
+              </h3>
+
+            </div>
+
+            <div className="bg-slate-800 p-4 rounded-xl">
+
+              <p className="text-slate-400">
+                Trend
+              </p>
+
+              <h3
+                className={`text-xl mt-2 font-bold ${
+                  stock.trend === "Bullish"
+                    ? "text-green-400"
+                    : "text-red-400"
+                }`}
+              >
+                {stock.trend}
+              </h3>
+
+            </div>
+
+          </div>
+          {/* Signal Engine */}
+
+<div className="mt-8 bg-slate-800 p-6 rounded-xl">
+
+  <h2 className="text-2xl font-bold mb-4">
+    Trading Signal
+  </h2>
+
+  <h3
+    className={`text-4xl font-bold ${
+      stock.signal === "BUY"
+        ? "text-green-400"
+        : stock.signal === "SELL"
+        ? "text-red-400"
+        : "text-yellow-400"
+    }`}
+  >
+    {stock.signal}
+  </h3>
+
+  <p className="mt-4 text-lg">
+    Confidence:
+    <span className="text-blue-400 ml-2">
+      {stock.confidence}%
+    </span>
+  </p>
+
+  <p className="mt-4 text-slate-300">
+    {stock.reason}
+  </p>
+
+</div>
 
         </div>
 
@@ -245,16 +355,16 @@ function App() {
           Market Overview
         </h2>
 
-       <MarketGrid
-  stocks={stocks}
-  onSelectStock={(selected) => {
+        <MarketGrid
+          stocks={stocks}
+          onSelectStock={(selected) => {
 
-    setSymbol(selected);
+            setSymbol(selected);
 
-    fetchStock(selected);
+            fetchStock(selected);
 
-  }}
-/>
+          }}
+        />
 
       </div>
 
