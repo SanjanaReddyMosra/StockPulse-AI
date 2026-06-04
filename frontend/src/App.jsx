@@ -74,7 +74,7 @@ function App() {
 
   return (
 
-    <div className="min-h-screen bg-slate-950 text-white p-10">
+    <div className="min-h-screen bg-slate-950 text-white p-6 md:p-10">
 
       <h1 className="text-5xl font-bold">
         StockPulse AI
@@ -163,7 +163,7 @@ function App() {
 
       {stock && !loading && (
 
-        <div className="mt-10 bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl">
+        <div className="mt-10 bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl hover:shadow-blue-900/30 transition-all duration-300">
 
           <div className="flex justify-between items-center">
 
@@ -209,7 +209,7 @@ function App() {
 
           <div className="grid md:grid-cols-4 gap-4 mt-8">
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
               <p className="text-slate-400">
                 Open
               </p>
@@ -219,7 +219,7 @@ function App() {
               </h3>
             </div>
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
               <p className="text-slate-400">
                 High
               </p>
@@ -229,7 +229,7 @@ function App() {
               </h3>
             </div>
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
               <p className="text-slate-400">
                 Low
               </p>
@@ -255,7 +255,7 @@ function App() {
 
           <div className="grid md:grid-cols-4 gap-4 mt-8">
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
               <p className="text-slate-400">
                 RSI
@@ -267,7 +267,7 @@ function App() {
 
             </div>
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
               <p className="text-slate-400">
                 SMA20
@@ -279,7 +279,7 @@ function App() {
 
             </div>
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
               <p className="text-slate-400">
                 SMA50
@@ -291,7 +291,7 @@ function App() {
 
             </div>
 
-            <div className="bg-slate-800 p-4 rounded-xl">
+            <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
               <p className="text-slate-400">
                 Trend
@@ -312,7 +312,7 @@ function App() {
           </div>
           {/* Signal Engine */}
 
-<div className="mt-8 bg-slate-800 p-6 rounded-xl">
+<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300">
 
   <h2 className="text-2xl font-bold mb-4">
     Trading Signal
@@ -327,15 +327,34 @@ function App() {
         : "text-yellow-400"
     }`}
   >
-    {stock.signal}
+    {stock.signal === "BUY" && "🟢 BUY"}
+
+  {stock.signal === "SELL" && "🔴 SELL"}
+
+  {stock.signal === "HOLD" && "🟡 HOLD"}
   </h3>
 
-  <p className="mt-4 text-lg">
+  <div className="mt-4">
+
+  <p className="mb-2">
     Confidence:
     <span className="text-blue-400 ml-2">
       {stock.confidence}%
     </span>
   </p>
+
+  <div className="w-full bg-slate-700 rounded-full h-3">
+
+    <div
+      className="bg-blue-500 h-3 rounded-full"
+      style={{
+        width: `${stock.confidence}%`
+      }}
+    />
+
+  </div>
+
+</div>
 
   <p className="mt-4 text-slate-300">
     {stock.reason}
@@ -370,7 +389,7 @@ function App() {
 
       {/* Bottom Widgets */}
 
-      <div className="grid md:grid-cols-2 gap-6 mt-10">
+      <div className="grid lg:grid-cols-2 gap-6 mt-10">
 
         <MarketStatus />
 
