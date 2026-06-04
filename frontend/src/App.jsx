@@ -3,6 +3,7 @@ import API from "./api/stockApi";
 import MarketGrid from "./components/MarketGrid";
 import MarketStatus from "./components/MarketStatus";
 import RecentSignals from "./components/RecentSignals";
+import CandlestickChart from "./components/CandlestickChart";
 
 function App() {
 
@@ -55,6 +56,25 @@ function App() {
     }
 
   };
+
+  const sampleData = [
+  {
+    x: new Date("2025-06-01"),
+    y: [3900, 4000, 3850, 3980],
+  },
+  {
+    x: new Date("2025-06-02"),
+    y: [3980, 4050, 3950, 4020],
+  },
+  {
+    x: new Date("2025-06-03"),
+    y: [4020, 4100, 3990, 4080],
+  },
+  {
+    x: new Date("2025-06-04"),
+    y: [4080, 4150, 4050, 4120],
+  },
+];
 
   useEffect(() => {
 
@@ -365,6 +385,18 @@ function App() {
         </div>
 
       )}
+
+      {/* Candlestick Chart */}
+
+<div className="mt-10">
+  <h2 className="text-3xl font-bold mb-6">
+    Price Chart
+  </h2>
+
+  <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+    <CandlestickChart data={sampleData} />
+  </div>
+</div>
 
       {/* Market Overview */}
 
