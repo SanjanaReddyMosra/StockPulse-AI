@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from services.data_loader import get_history
 from services.features import calculate_features
+from services.sentiment import analyze_sentiment
 
 load_dotenv()
 
@@ -133,57 +134,53 @@ def get_news(symbol: str):
 
         sentiment = "Neutral"
 
-        positive_words = [
-            "gain",
-            "growth",
-            "profit",
-            "surge",
-            "bullish",
-            "rise",
-            "recover",
-            "rebound",
-            "up",
-            "strong",
-            "jump",
-            "rally"
-        ]
-
-        negative_words = [
-            "loss",
-            "drop",
-            "fall",
-            "bearish",
-            "decline",
-            "crash",
-            "slump",
-            "weak",
-            "selloff",
-            "bleeds",
-            "rout",
-            "plunge"
-        ]
-
-        if any(
-            word in title.lower()
-            for word in positive_words
-        ):
-            sentiment = "Positive"
-
-        elif any(
-            word in title.lower()
-            for word in negative_words
-        ):
-            sentiment = "Negative"
+        sentiment_data = analyze_sentiment(title)
 
         articles.append({
             "title": title,
             "source": article["source"]["name"],
             "url": article["url"],
-            "sentiment": sentiment
+            "sentiment": sentiment_data["label"],
+            "score": sentiment_data["score"]
         })
 
     return articles
 
+@app.get("/sentiment/{symbol}")
+def sentiment_summary(symbol: str):
+
+    news = get_news(symbol)
+
+    if not news:
+        return {
+            "score": 0,
+            "label": "Neutral"
+        }
+
+    total = sum(
+        article["score"]
+        for article in news
+    )
+
+    average = round(
+        total / len(news),
+        2
+    )
+
+    if average > 0:
+        label = "Positive"
+
+    elif average < 0:
+        label = "Negative"
+
+    else:
+        label = "Neutral"
+
+    return {
+        "symbol": symbol.upper(),
+        "score": average,
+        "label": label
+    }
 
 @app.get("/history/{symbol}")
 def history(symbol: str):
