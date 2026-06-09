@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 import requests
 import os
+from services.data_loader import get_history
 
 from ta.momentum import RSIIndicator
 from ta.trend import SMAIndicator
@@ -222,6 +223,39 @@ def get_news(symbol: str):
         })
 
     return articles
+
+@app.get("/history/{symbol}")
+def history(symbol: str):
+
+    stock_symbols = {
+        "TCS": "TCS.NS",
+        "INFY": "INFY.NS",
+        "RELIANCE": "RELIANCE.NS",
+        "HDFCBANK": "HDFCBANK.NS",
+        "ICICIBANK": "ICICIBANK.NS",
+        "SBIN": "SBIN.NS",
+        "TATAMOTORS": "TATAMOTORS.NS"
+    }
+
+    ticker = stock_symbols.get(symbol.upper())
+
+    if not ticker:
+        return {
+            "error": "Stock not supported"
+        }
+
+    data = get_history(ticker)
+
+    if not data:
+        return {
+            "error": "No historical data found"
+        }
+
+    return {
+        "stock": symbol.upper(),
+        "days": len(data),
+        "history": data
+    }
 
 @app.get("/stocks")
 def get_stocks():
