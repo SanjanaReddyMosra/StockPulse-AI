@@ -1,9 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
+import requests
+import os
 
 from ta.momentum import RSIIndicator
 from ta.trend import SMAIndicator
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 
@@ -109,26 +114,7 @@ def stock(symbol: str):
             else "Bearish"
         )
 
-        signal = "HOLD"
-        confidence = 50
-        reason = "Market Neutral"
-        if trend == "Bullish" and rsi < 30:
-            signal = "BUY"
-            confidence = 85
-            reason = "Oversold RSI with Bullish Trend"
-        elif trend == "Bearish" and rsi > 70:
-            signal = "SELL"
-            confidence = 85
-            reason = "Overbought RSI with Bearish Trend"
-        elif trend == "Bullish":
-            signal = "BUY"
-            confidence = 70
-            reason = "Bullish Moving Average Trend"
-        elif trend == "Bearish":
-            signal = "SELL"
-            confidence = 70
-            reason = "Bearish Moving Average Trend"
-
+        
         change = round(
             latest_price - open_price,
             2
@@ -151,10 +137,7 @@ def stock(symbol: str):
             "rsi": rsi,
             "sma20": sma20,
             "sma50": sma50,
-            "trend": trend,
-            "signal": signal,
-            "confidence": confidence,
-            "reason": reason
+            "trend": trend
         }
 
     except Exception as e:
@@ -163,6 +146,82 @@ def stock(symbol: str):
             "error": str(e)
         }
 
+@app.get("/news/{symbol}")
+def get_news(symbol: str):
+
+    API_KEY = os.getenv("NEWS_API_KEY")
+
+    url = (
+        f"https://newsapi.org/v2/everything?"
+        f"q={symbol} NSE"
+        f"&language=en"
+        f"&sortBy=publishedAt"
+        f"&pageSize=5"
+        f"&apiKey={API_KEY}"
+    )
+
+    response = requests.get(url)
+
+    data = response.json()
+
+    articles = []
+
+    for article in data.get("articles", []):
+
+        title = article.get("title", "")
+
+        sentiment = "Neutral"
+
+        positive_words = [
+            "gain",
+            "growth",
+            "profit",
+            "surge",
+            "bullish",
+            "rise",
+            "recover",
+            "rebound",
+            "up",
+            "strong",
+            "jump",
+            "rally"
+        ]
+
+        negative_words = [
+            "loss",
+            "drop",
+            "fall",
+            "bearish",
+            "decline",
+            "crash",
+            "slump",
+            "weak",
+            "selloff",
+            "bleeds",
+            "rout",
+            "plunge"
+        ]
+
+        if any(
+            word in title.lower()
+            for word in positive_words
+        ):
+            sentiment = "Positive"
+
+        elif any(
+            word in title.lower()
+            for word in negative_words
+        ):
+            sentiment = "Negative"
+
+        articles.append({
+            "title": title,
+            "source": article["source"]["name"],
+            "url": article["url"],
+            "sentiment": sentiment
+        })
+
+    return articles
 
 @app.get("/stocks")
 def get_stocks():

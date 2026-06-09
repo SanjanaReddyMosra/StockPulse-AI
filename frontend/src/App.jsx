@@ -5,6 +5,165 @@ import MarketStatus from "./components/MarketStatus";
 import RecentSignals from "./components/RecentSignals";
 import CandlestickChart from "./components/CandlestickChart";
 
+const calculateSignal = (stock) => {
+  let score = 0;
+  let reasons = [];
+
+  // RSI
+  if (stock.rsi < 30) {
+    score += 35;
+    reasons.push("RSI Oversold");
+  } else if (stock.rsi > 70) {
+    score -= 35;
+    reasons.push("RSI Overbought");
+  }
+
+  // SMA Strength
+  const smaGap =
+    ((stock.sma20 - stock.sma50) / stock.sma50) * 100;
+
+  if (smaGap > 2) {
+    score += 25;
+    reasons.push("Strong Bullish SMA");
+  } else if (smaGap < -2) {
+    score -= 25;
+    reasons.push("Strong Bearish SMA");
+  }
+
+  // Trend
+  if (stock.trend === "Bullish") {
+    score += 20;
+    reasons.push("Bullish Trend");
+  } else {
+    score -= 20;
+    reasons.push("Bearish Trend");
+  }
+
+  // Daily Momentum
+if (stock.percent > 1) {
+  score += 20;
+  reasons.push("Positive Momentum");
+}
+else if (stock.percent < -1) {
+  score -= 20;
+  reasons.push("Negative Momentum");
+}
+
+  // Volume
+  if (stock.volume > 1000000) {
+    score += 10;
+    reasons.push("High Volume");
+  }
+
+  let signal = "HOLD";
+
+  if (score >= 25) {
+    signal = "BUY";
+  } else if (score <= -25) {
+    signal = "SELL";
+  }
+
+  return {
+    signal,
+    confidence: Math.min(Math.abs(score), 100),
+    reasons,
+  };
+};
+
+const calculateRisk = (stock) => {
+
+  let riskScore = 0;
+
+  // RSI extremes
+  if (stock.rsi > 70 || stock.rsi < 30) {
+    riskScore += 40;
+  }
+
+  // Trend
+  if (stock.trend === "Bearish") {
+    riskScore += 30;
+  }
+
+  // Large daily move
+  if (Math.abs(stock.percent) > 2) {
+    riskScore += 20;
+  }
+
+  // Volume spike
+  if (stock.volume > 2000000) {
+    riskScore += 10;
+  }
+
+  let risk = "Low";
+
+  if (riskScore >= 60) {
+    risk = "High";
+  }
+  else if (riskScore >= 30) {
+    risk = "Medium";
+  }
+
+  return {
+    risk,
+    riskScore
+  };
+};
+
+const generateInsight = (
+  stock,
+  signalResult,
+  riskResult
+) => {
+
+  let insight = "";
+
+  // Trend
+  if (stock.trend === "Bullish") {
+    insight +=
+      "The stock is currently in a bullish trend. ";
+  } else {
+    insight +=
+      "The stock is currently in a bearish trend. ";
+  }
+
+  // RSI
+  if (stock.rsi < 30) {
+    insight +=
+      "RSI indicates oversold conditions and a potential rebound. ";
+  }
+  else if (stock.rsi > 70) {
+    insight +=
+      "RSI indicates overbought conditions and possible profit booking. ";
+  }
+  else {
+    insight +=
+      "RSI remains neutral without strong reversal signals. ";
+  }
+
+  // Signal
+  if (signalResult.signal === "BUY") {
+    insight +=
+      "Technical indicators currently favor a buying opportunity. ";
+  }
+  else if (
+    signalResult.signal === "SELL"
+  ) {
+    insight +=
+      "Technical indicators currently suggest downside risk. ";
+  }
+  else {
+    insight +=
+      "The stock is trading in a neutral zone. ";
+  }
+
+  // Risk
+  insight +=
+    `Overall risk is ${riskResult.risk.toLowerCase()}. `;
+
+  return insight;
+
+};
+
 function App() {
 
   const [stock, setStock] = useState(null);
@@ -12,8 +171,19 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [stocks, setStocks] = useState([]);
+  const [news, setNews] = useState([]);
   const [lastUpdated, setLastUpdated] = useState("");
 
+  const [portfolio, setPortfolio] = useState([]);
+
+const [portfolioSymbol, setPortfolioSymbol] =
+  useState("");
+
+const [quantity, setQuantity] =
+  useState("");
+
+const [buyPrice, setBuyPrice] =
+  useState("");
   const fetchStock = async (stockSymbol) => {
 
     setLoading(true);
@@ -57,6 +227,57 @@ function App() {
 
   };
 
+  const fetchNews = async (stockSymbol) => {
+
+  try {
+
+    const response =
+      await API.get(`/news/${stockSymbol}`);
+
+    setNews(response.data);
+
+  }
+  catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+
+const addToPortfolio = () => {
+
+  if (
+    !portfolioSymbol ||
+    !quantity ||
+    !buyPrice
+  )
+    return;
+
+  const newItem = {
+    symbol: portfolioSymbol.toUpperCase(),
+    quantity: Number(quantity),
+    buyPrice: Number(buyPrice),
+  };
+
+  const updatedPortfolio = [
+    ...portfolio,
+    newItem,
+  ];
+
+  setPortfolio(updatedPortfolio);
+
+  localStorage.setItem(
+    "portfolio",
+    JSON.stringify(updatedPortfolio)
+  );
+
+  setPortfolioSymbol("");
+  setQuantity("");
+  setBuyPrice("");
+
+};
+
   const sampleData = [
   {
     x: new Date("2025-06-01"),
@@ -75,15 +296,43 @@ function App() {
     y: [4080, 4150, 4050, 4120],
   },
 ];
+const removeStock = (index) => {
+
+  const updatedPortfolio =
+    portfolio.filter(
+      (_, i) => i !== index
+    );
+
+  setPortfolio(
+    updatedPortfolio
+  );
+
+  localStorage.setItem(
+    "portfolio",
+    JSON.stringify(
+      updatedPortfolio
+    )
+  );
+
+};
 
   useEffect(() => {
+    const savedPortfolio =
+  localStorage.getItem("portfolio");
 
+if (savedPortfolio) {
+  setPortfolio(
+    JSON.parse(savedPortfolio)
+  );
+}
     fetchStock("TCS");
+    fetchNews("TCS");
     fetchMarketStocks();
 
     const interval = setInterval(() => {
 
       fetchStock(symbol);
+      fetchNews(symbol);
       fetchMarketStocks();
 
     }, 60000);
@@ -91,6 +340,41 @@ function App() {
     return () => clearInterval(interval);
 
   }, [symbol]);
+
+  const signalResult =
+  stock ? calculateSignal(stock) : null;
+
+  const riskResult =
+  stock ? calculateRisk(stock) : null;
+
+  const aiInsight =
+  stock &&
+  signalResult &&
+  riskResult
+    ? generateInsight(
+        stock,
+        signalResult,
+        riskResult
+      )
+    : "";
+
+  const totalInvestment = portfolio.reduce(
+  (sum, item) =>
+    sum + item.buyPrice * item.quantity,
+  0
+);
+
+const totalCurrentValue = portfolio.reduce(
+  (sum, item) =>
+    sum +
+    (stock?.price || 0) *
+      item.quantity,
+  0
+);
+
+const totalProfit =
+  totalCurrentValue -
+  totalInvestment;
 
   return (
 
@@ -103,6 +387,8 @@ function App() {
       <p className="text-slate-400 mt-3">
         Real-Time Indian Stock Analytics
       </p>
+
+      
 
       <p className="text-green-400 mt-2">
         Last Updated: {lastUpdated}
@@ -146,8 +432,8 @@ function App() {
             onClick={() => {
 
               setSymbol(s);
-
               fetchStock(s);
+              fetchNews(s);
 
             }}
             className="bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700"
@@ -330,61 +616,133 @@ function App() {
             </div>
 
           </div>
-          {/* Signal Engine */}
+          {/* AI Signal Engine */}
 
-<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300">
+<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
 
   <h2 className="text-2xl font-bold mb-4">
-    Trading Signal
+    AI Trading Signal
   </h2>
 
   <h3
     className={`text-4xl font-bold ${
-      stock.signal === "BUY"
+      signalResult.signal === "BUY"
         ? "text-green-400"
-        : stock.signal === "SELL"
+        : signalResult.signal === "SELL"
         ? "text-red-400"
         : "text-yellow-400"
     }`}
   >
-    {stock.signal === "BUY" && "🟢 BUY"}
-
-  {stock.signal === "SELL" && "🔴 SELL"}
-
-  {stock.signal === "HOLD" && "🟡 HOLD"}
+    {signalResult.signal}
   </h3>
 
-  <div className="mt-4">
-
-  <p className="mb-2">
+  <p className="mt-3">
     Confidence:
     <span className="text-blue-400 ml-2">
-      {stock.confidence}%
+      {signalResult.confidence}%
     </span>
   </p>
 
-  <div className="w-full bg-slate-700 rounded-full h-3">
+  <div className="w-full bg-slate-700 rounded-full h-3 mt-2">
 
     <div
       className="bg-blue-500 h-3 rounded-full"
       style={{
-        width: `${stock.confidence}%`
+        width: `${signalResult.confidence}%`
+      }}
+    />
+
+  </div>
+
+  <div className="mt-5">
+
+    <h4 className="font-semibold mb-2">
+      Reasons
+    </h4>
+
+    <ul className="space-y-2">
+
+      {signalResult.reasons.map(
+        (reason, index) => (
+
+          <li
+            key={index}
+            className="text-slate-300"
+          >
+            ✓ {reason}
+          </li>
+
+        )
+      )}
+
+    </ul>
+
+  </div>
+
+</div>
+</div>
+)}
+{riskResult && (
+<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
+
+  <h2 className="text-2xl font-bold mb-4">
+    Risk Analysis
+  </h2>
+
+  <h3
+    className={`text-3xl font-bold ${
+      riskResult?.risk === "Low"
+        ? "text-green-400"
+        : riskResult?.risk === "Medium"
+        ? "text-yellow-400"
+        : "text-red-400"
+    }`}
+  >
+    {riskResult?.risk} Risk
+  </h3>
+
+  <p className="mt-3">
+    Risk Score:
+    <span className="ml-2 text-blue-400">
+      {riskResult?.riskScore}/100
+    </span>
+  </p>
+
+  <div className="w-full bg-slate-700 rounded-full h-3 mt-3">
+
+    <div
+      className={`h-3 rounded-full ${
+        riskResult?.risk === "Low"
+          ? "bg-green-500"
+          : riskResult?.risk === "Medium"
+          ? "bg-yellow-500"
+          : "bg-red-500"
+      }`}
+      style={{
+        width: `${riskResult?.riskScore || 0}%`
       }}
     />
 
   </div>
 
 </div>
+)}
 
-  <p className="mt-4 text-slate-300">
-    {stock.reason}
-  </p>
+<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
+
+  <h2 className="text-2xl font-bold mb-4">
+    AI Market Insights
+  </h2>
+
+  <div className="bg-slate-900 p-5 rounded-xl">
+
+    <p className="text-slate-300 leading-8">
+      {aiInsight}
+    </p>
+
+  </div>
 
 </div>
-
-        </div>
-
-      )}
 
       {/* Candlestick Chart */}
 
@@ -396,6 +754,257 @@ function App() {
   <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
     <CandlestickChart data={sampleData} />
   </div>
+</div>
+
+      <div className="mt-10">
+
+  <h2 className="text-3xl font-bold mb-6">
+    Latest News
+  </h2>
+
+  <div className="grid gap-4">
+
+    {news.map((item, index) => (
+
+      <div
+        key={index}
+        className="bg-slate-900 p-5 rounded-xl border border-slate-800"
+      >
+
+        <h3 className="font-semibold">
+          {item.title}
+        </h3>
+
+        <p className="text-slate-400 mt-2">
+          {item.source}
+        </p>
+
+        <a
+  href={item.url}
+  target="_blank"
+  rel="noreferrer"
+  className="text-blue-400 text-sm block mt-2"
+>
+  Read Article →
+</a>
+
+        <span
+          className={`inline-block mt-3 px-3 py-1 rounded-full text-sm ${
+            item.sentiment === "Positive"
+              ? "bg-green-500/20 text-green-400"
+              : item.sentiment === "Negative"
+              ? "bg-red-500/20 text-red-400"
+              : "bg-yellow-500/20 text-yellow-400"
+          }`}
+        >
+          {item.sentiment}
+        </span>
+
+      </div>
+
+    ))}
+
+  </div>
+
+      </div>
+
+      <div className="mt-12">
+
+  <h2 className="text-3xl font-bold mb-6">
+    Portfolio Tracker
+  </h2>
+
+  <div className="bg-slate-900 p-6 rounded-2xl">
+
+    <div className="grid md:grid-cols-4 gap-4">
+
+      <input
+        type="text"
+        placeholder="Stock"
+        value={portfolioSymbol}
+        onChange={(e) =>
+          setPortfolioSymbol(e.target.value)
+        }
+        className="bg-slate-800 p-3 rounded-xl"
+      />
+
+      <input
+        type="number"
+        placeholder="Quantity"
+        value={quantity}
+        onChange={(e) =>
+          setQuantity(e.target.value)
+        }
+        className="bg-slate-800 p-3 rounded-xl"
+      />
+
+      <input
+        type="number"
+        placeholder="Buy Price"
+        value={buyPrice}
+        onChange={(e) =>
+          setBuyPrice(e.target.value)
+        }
+        className="bg-slate-800 p-3 rounded-xl"
+      />
+
+      <button
+        onClick={addToPortfolio}
+        className="bg-green-600 rounded-xl"
+      >
+        Add Stock
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div className="mt-6 bg-slate-900 p-6 rounded-2xl">
+
+  <table className="w-full">
+
+    <thead>
+
+      <tr className="text-left">
+
+        <th>Stock</th>
+        <th>Qty</th>
+        <th>Buy Price</th>
+        <th>Current</th>
+        <th>Risk</th>
+        <th>P/L</th>
+        <th>Action</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      {portfolio.map((item, index) => (
+
+        <tr
+          key={index}
+          className="border-t border-slate-700"
+        >
+
+          <td className="py-3">
+  {item.symbol}
+</td>
+
+<td>
+  {item.quantity}
+</td>
+
+<td>
+  ₹{item.buyPrice}
+</td>
+
+<td>
+  ₹{stock?.price}
+</td>
+
+<td>
+  <span
+    className={`px-2 py-1 rounded text-sm ${
+      riskResult?.risk === "Low"
+        ? "bg-green-500/20 text-green-400"
+        : riskResult?.risk === "Medium"
+        ? "bg-yellow-500/20 text-yellow-400"
+        : "bg-red-500/20 text-red-400"
+    }`}
+  >
+    {riskResult?.risk}
+  </span>
+</td>
+
+<td
+  className={
+    stock?.price > item.buyPrice
+      ? "text-green-400"
+      : "text-red-400"
+  }
+>
+  ₹
+  {
+    (
+  ((stock?.price || 0) -
+    item.buyPrice) *
+  item.quantity
+).toFixed(2)}
+</td>
+
+<td>
+  <button
+    onClick={() =>
+      removeStock(index)
+    }
+    className="bg-red-600 px-3 py-1 rounded"
+  >
+    Remove
+  </button>
+</td>
+
+        </tr>
+
+      ))}
+
+    </tbody>
+
+  </table>
+
+</div>
+
+<div className="mt-6 bg-slate-900 p-6 rounded-2xl">
+
+  <div className="grid md:grid-cols-3 gap-4">
+
+  <div className="bg-slate-800 p-4 rounded-xl">
+
+    <p className="text-slate-400">
+      Investment
+    </p>
+
+    <h3 className="text-2xl font-bold">
+      ₹{totalInvestment.toFixed(2)}
+    </h3>
+
+  </div>
+
+  <div className="bg-slate-800 p-4 rounded-xl">
+
+    <p className="text-slate-400">
+      Current Value
+    </p>
+
+    <h3 className="text-2xl font-bold">
+      ₹{totalCurrentValue.toFixed(2)}
+    </h3>
+
+  </div>
+
+  <div className="bg-slate-800 p-4 rounded-xl">
+
+    <p className="text-slate-400">
+      Profit / Loss
+    </p>
+
+    <h3
+      className={`text-2xl font-bold ${
+        totalProfit >= 0
+          ? "text-green-400"
+          : "text-red-400"
+      }`}
+    >
+      ₹{totalProfit.toFixed(2)}
+    </h3>
+
+  </div>
+
+</div>
+
 </div>
 
       {/* Market Overview */}
