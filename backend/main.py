@@ -10,6 +10,7 @@ from services.data_loader import get_history
 from services.features import calculate_features
 from services.sentiment import analyze_sentiment
 from services.predictor import predict_stock
+from services.recommendation import get_recommendation
 
 load_dotenv()
 
@@ -52,6 +53,12 @@ def stock(symbol: str):
 
         features = calculate_features(hist)
         prediction_data = predict_stock(symbol)
+        sentiment_data = sentiment_summary(symbol)
+
+        recommendation_data = get_recommendation(
+            symbol,
+            sentiment_data["score"]
+        )
 
         latest_price = round(
             hist["Close"].iloc[-1],
@@ -102,7 +109,8 @@ def stock(symbol: str):
             "daily_return": features["daily_return"],
             "trend": features["trend"],
             "prediction": prediction_data["prediction"],
-            "confidence": prediction_data["confidence"]
+            "confidence": prediction_data["confidence"],
+            "recommendation": recommendation_data["recommendation"]
         }
 
     except Exception as e:
@@ -197,6 +205,29 @@ def predict(symbol: str):
         }
 
     return result
+
+@app.get("/recommendation/{symbol}")
+def recommendation(symbol: str):
+
+    sentiment_data = sentiment_summary(symbol)
+
+    result = get_recommendation(
+        symbol,
+        sentiment_data["score"]
+    )
+
+    if not result:
+        return {
+            "error": "Recommendation unavailable"
+        }
+
+    return {
+        "symbol": symbol.upper(),
+        "sentiment_score": sentiment_data["score"],
+        "prediction": result["prediction"],
+        "confidence": result["confidence"],
+        "recommendation": result["recommendation"]
+    }
 
 @app.get("/history/{symbol}")
 def history(symbol: str):
