@@ -3,17 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 import requests
 import os
-from services.data_loader import get_history
-
-from ta.momentum import RSIIndicator
-from ta.trend import SMAIndicator
 
 from dotenv import load_dotenv
+
+from services.data_loader import get_history
+from services.features import calculate_features
+
 load_dotenv()
 
 app = FastAPI()
 
 # CORS
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -47,6 +48,8 @@ def stock(symbol: str):
                 "error": "Stock not found"
             }
 
+        features = calculate_features(hist)
+
         latest_price = round(
             hist["Close"].iloc[-1],
             2
@@ -71,51 +74,6 @@ def stock(symbol: str):
             hist["Volume"].iloc[-1]
         )
 
-        # RSI
-
-        rsi_indicator = RSIIndicator(
-            close=hist["Close"],
-            window=14
-        )
-
-        rsi = round(
-            rsi_indicator.rsi().iloc[-1],
-            2
-        )
-
-        # SMA20
-
-        sma20_indicator = SMAIndicator(
-            close=hist["Close"],
-            window=20
-        )
-
-        sma20 = round(
-            sma20_indicator.sma_indicator().iloc[-1],
-            2
-        )
-
-        # SMA50
-
-        sma50_indicator = SMAIndicator(
-            close=hist["Close"],
-            window=50
-        )
-
-        sma50 = round(
-            sma50_indicator.sma_indicator().iloc[-1],
-            2
-        )
-
-        # Trend
-
-        trend = (
-            "Bullish"
-            if sma20 > sma50
-            else "Bearish"
-        )
-
-        
         change = round(
             latest_price - open_price,
             2
@@ -135,10 +93,11 @@ def stock(symbol: str):
             "volume": volume,
             "change": change,
             "percent": percent,
-            "rsi": rsi,
-            "sma20": sma20,
-            "sma50": sma50,
-            "trend": trend
+            "rsi": features["rsi"],
+            "sma20": features["sma20"],
+            "sma50": features["sma50"],
+            "daily_return": features["daily_return"],
+            "trend": features["trend"]
         }
 
     except Exception as e:
@@ -146,6 +105,7 @@ def stock(symbol: str):
         return {
             "error": str(e)
         }
+
 
 @app.get("/news/{symbol}")
 def get_news(symbol: str):
@@ -224,25 +184,11 @@ def get_news(symbol: str):
 
     return articles
 
+
 @app.get("/history/{symbol}")
 def history(symbol: str):
 
-    stock_symbols = {
-        "TCS": "TCS.NS",
-        "INFY": "INFY.NS",
-        "RELIANCE": "RELIANCE.NS",
-        "HDFCBANK": "HDFCBANK.NS",
-        "ICICIBANK": "ICICIBANK.NS",
-        "SBIN": "SBIN.NS",
-        "TATAMOTORS": "TATAMOTORS.NS"
-    }
-
-    ticker = stock_symbols.get(symbol.upper())
-
-    if not ticker:
-        return {
-            "error": "Stock not supported"
-        }
+    ticker = f"{symbol.upper()}.NS"
 
     data = get_history(ticker)
 
@@ -256,6 +202,7 @@ def history(symbol: str):
         "days": len(data),
         "history": data
     }
+
 
 @app.get("/stocks")
 def get_stocks():
