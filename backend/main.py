@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from services.data_loader import get_history
 from services.features import calculate_features
 from services.sentiment import analyze_sentiment
+from services.predictor import predict_stock
 
 load_dotenv()
 
@@ -50,6 +51,7 @@ def stock(symbol: str):
             }
 
         features = calculate_features(hist)
+        prediction_data = predict_stock(symbol)
 
         latest_price = round(
             hist["Close"].iloc[-1],
@@ -98,7 +100,9 @@ def stock(symbol: str):
             "sma20": features["sma20"],
             "sma50": features["sma50"],
             "daily_return": features["daily_return"],
-            "trend": features["trend"]
+            "trend": features["trend"],
+            "prediction": prediction_data["prediction"],
+            "confidence": prediction_data["confidence"]
         }
 
     except Exception as e:
@@ -181,6 +185,18 @@ def sentiment_summary(symbol: str):
         "score": average,
         "label": label
     }
+
+@app.get("/predict/{symbol}")
+def predict(symbol: str):
+
+    result = predict_stock(symbol)
+
+    if not result:
+        return {
+            "error": "Prediction unavailable"
+        }
+
+    return result
 
 @app.get("/history/{symbol}")
 def history(symbol: str):
