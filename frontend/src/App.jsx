@@ -173,7 +173,11 @@ function App() {
   const [stocks, setStocks] = useState([]);
   const [news, setNews] = useState([]);
   const [lastUpdated, setLastUpdated] = useState("");
+  const [recommendation, setRecommendation] =
+  useState(null);
 
+const [sentiment, setSentiment] =
+  useState(null);
   const [portfolio, setPortfolio] = useState([]);
 
 const [portfolioSymbol, setPortfolioSymbol] =
@@ -235,6 +239,52 @@ const [buyPrice, setBuyPrice] =
       await API.get(`/news/${stockSymbol}`);
 
     setNews(response.data);
+
+  }
+  catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+const fetchRecommendation = async (
+  stockSymbol
+) => {
+
+  try {
+
+    const response =
+      await API.get(
+        `/recommendation/${stockSymbol}`
+      );
+
+    setRecommendation(
+      response.data
+    );
+
+  }
+  catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+const fetchSentiment = async (
+  stockSymbol
+) => {
+
+  try {
+
+    const response =
+      await API.get(
+        `/sentiment/${stockSymbol}`
+      );
+
+    setSentiment(
+      response.data
+    );
 
   }
   catch (error) {
@@ -327,12 +377,16 @@ if (savedPortfolio) {
 }
     fetchStock("TCS");
     fetchNews("TCS");
+    fetchRecommendation("TCS");
+    fetchSentiment("TCS");
     fetchMarketStocks();
 
     const interval = setInterval(() => {
 
       fetchStock(symbol);
       fetchNews(symbol);
+      fetchRecommendation(symbol);
+      fetchSentiment(symbol);
       fetchMarketStocks();
 
     }, 60000);
@@ -407,7 +461,12 @@ const totalProfit =
         />
 
         <button
-          onClick={() => fetchStock(symbol)}
+          onClick={() => {
+            fetchStock(symbol);
+            fetchNews(symbol);
+            fetchRecommendation(symbol);
+            fetchSentiment(symbol);
+          }}
           className="bg-blue-600 px-5 py-3 rounded-xl hover:bg-blue-700"
         >
           Search
@@ -434,6 +493,8 @@ const totalProfit =
               setSymbol(s);
               fetchStock(s);
               fetchNews(s);
+              fetchRecommendation(s);
+              fetchSentiment(s);
 
             }}
             className="bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700"
@@ -614,7 +675,23 @@ const totalProfit =
               </h3>
 
             </div>
+            <div className="bg-slate-800 p-4 rounded-xl">
 
+  <p className="text-slate-400">
+    Daily Return
+  </p>
+
+  <h3
+    className={`text-xl mt-2 ${
+      stock.daily_return > 0
+        ? "text-green-400"
+        : "text-red-400"
+    }`}
+  >
+    {stock.daily_return}%
+  </h3>
+
+</div>
           </div>
           {/* AI Signal Engine */}
 
@@ -682,6 +759,115 @@ const totalProfit =
 </div>
 </div>
 )}
+
+{sentiment && (
+
+<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
+
+  <h2 className="text-2xl font-bold mb-4">
+    Market Sentiment
+  </h2>
+
+  <div className="grid md:grid-cols-2 gap-4">
+
+    <div>
+
+      <p className="text-slate-400">
+        Score
+      </p>
+
+      <h3 className="text-3xl font-bold">
+        {sentiment.score}
+      </h3>
+
+    </div>
+
+    <div>
+
+      <p className="text-slate-400">
+        Label
+      </p>
+
+      <h3
+        className={`text-3xl font-bold ${
+          sentiment.label === "Positive"
+            ? "text-green-400"
+            : sentiment.label === "Negative"
+            ? "text-red-400"
+            : "text-yellow-400"
+        }`}
+      >
+        {sentiment.label}
+      </h3>
+
+    </div>
+
+  </div>
+
+</div>
+
+)}
+
+{recommendation && (
+
+<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
+
+  <h2 className="text-2xl font-bold mb-4">
+    AI Prediction Engine
+  </h2>
+
+  <div className="grid md:grid-cols-3 gap-4">
+
+    <div>
+
+      <p className="text-slate-400">
+        Prediction
+      </p>
+
+      <h3 className="text-3xl font-bold text-blue-400">
+        {recommendation.prediction}
+      </h3>
+
+    </div>
+
+    <div>
+
+      <p className="text-slate-400">
+        Confidence
+      </p>
+
+      <h3 className="text-3xl font-bold text-purple-400">
+        {recommendation.confidence}%
+      </h3>
+
+    </div>
+
+    <div>
+
+      <p className="text-slate-400">
+        Recommendation
+      </p>
+
+      <h3
+        className={`text-3xl font-bold ${
+          recommendation.recommendation === "BUY"
+            ? "text-green-400"
+            : recommendation.recommendation === "SELL"
+            ? "text-red-400"
+            : "text-yellow-400"
+        }`}
+      >
+        {recommendation.recommendation}
+      </h3>
+
+    </div>
+
+  </div>
+
+</div>
+
+)}
+
 {riskResult && (
 <div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
 
@@ -1022,6 +1208,9 @@ const totalProfit =
             setSymbol(selected);
 
             fetchStock(selected);
+            fetchNews(selected);
+            fetchRecommendation(selected);
+            fetchSentiment(selected);
 
           }}
         />
