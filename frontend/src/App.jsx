@@ -618,7 +618,7 @@ const totalProfit =
 
           {/* Price Information */}
 
-          <div className="grid md:grid-cols-5 gap-4 mt-8">
+          <div className="grid md:grid-cols-4 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
               <p className="text-slate-400">
@@ -664,7 +664,7 @@ const totalProfit =
 
           {/* Technical Indicators */}
 
-          <div className="grid md:grid-cols-5 gap-4 mt-8">
+          <div className="grid md:grid-cols-4 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
