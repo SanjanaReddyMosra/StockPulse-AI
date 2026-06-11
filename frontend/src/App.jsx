@@ -448,6 +448,50 @@ const totalProfit =
         Last Updated: {lastUpdated}
       </p>
 
+      <div className="grid md:grid-cols-5 gap-4 mt-8">
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p className="text-slate-400">
+      Selected Stock
+    </p>
+
+    <h3 className="text-2xl font-bold">
+      {stock?.symbol}
+    </h3>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p className="text-slate-400">
+      Signal
+    </p>
+
+    <h3 className="text-2xl font-bold">
+      {signalResult?.signal}
+    </h3>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p className="text-slate-400">
+      Risk
+    </p>
+
+    <h3 className="text-2xl font-bold">
+      {riskResult?.risk}
+    </h3>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p className="text-slate-400">
+      Recommendation
+    </p>
+
+    <h3 className="text-2xl font-bold">
+      {recommendation?.recommendation}
+    </h3>
+  </div>
+
+</div>
+
       {/* Search Bar */}
 
       <div className="mt-8 flex gap-3">
@@ -574,7 +618,7 @@ const totalProfit =
 
           {/* Price Information */}
 
-          <div className="grid md:grid-cols-4 gap-4 mt-8">
+          <div className="grid md:grid-cols-5 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
               <p className="text-slate-400">
@@ -620,7 +664,7 @@ const totalProfit =
 
           {/* Technical Indicators */}
 
-          <div className="grid md:grid-cols-4 gap-4 mt-8">
+          <div className="grid md:grid-cols-5 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
@@ -850,12 +894,16 @@ const totalProfit =
 
       <h3
         className={`text-3xl font-bold ${
-          recommendation.recommendation === "BUY"
-            ? "text-green-400"
-            : recommendation.recommendation === "SELL"
-            ? "text-red-400"
-            : "text-yellow-400"
-        }`}
+  recommendation.recommendation === "STRONG BUY"
+    ? "text-green-300"
+    : recommendation.recommendation === "BUY"
+    ? "text-green-500"
+    : recommendation.recommendation === "SELL"
+    ? "text-red-500"
+    : recommendation.recommendation === "STRONG SELL"
+    ? "text-red-300"
+    : "text-yellow-400"
+}`}
       >
         {recommendation.recommendation}
       </h3>
@@ -985,6 +1033,9 @@ const totalProfit =
         >
           {item.sentiment}
         </span>
+        <div className="mt-2 text-sm text-slate-400">
+  Sentiment Score: {item.score}
+</div>
 
       </div>
 
@@ -1226,6 +1277,11 @@ const totalProfit =
         <RecentSignals />
 
       </div>
+            <footer className="mt-20 text-center text-slate-500">
+
+        Built with React + FastAPI + Machine Learning
+
+      </footer>
 
     </div>
 
