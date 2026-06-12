@@ -175,7 +175,8 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState("");
   const [recommendation, setRecommendation] =
   useState(null);
-
+const [chartData, setChartData] =
+  useState([]);
 const [sentiment, setSentiment] =
   useState(null);
   const [portfolio, setPortfolio] = useState([]);
@@ -188,6 +189,35 @@ const [quantity, setQuantity] =
 
 const [buyPrice, setBuyPrice] =
   useState("");
+  const fetchHistory = async (
+  stockSymbol
+) => {
+  try {
+    const response =
+      await API.get(
+        `/history/${stockSymbol}`
+      );
+
+    const formatted =
+      response.data.history.map(
+        (item) => ({
+          x: new Date(item.date),
+          y: [
+            item.open,
+            item.high,
+            item.low,
+            item.close,
+          ],
+        })
+      );
+
+    setChartData(formatted);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   const fetchStock = async (stockSymbol) => {
 
     setLoading(true);
@@ -328,24 +358,7 @@ const addToPortfolio = () => {
 
 };
 
-  const sampleData = [
-  {
-    x: new Date("2025-06-01"),
-    y: [3900, 4000, 3850, 3980],
-  },
-  {
-    x: new Date("2025-06-02"),
-    y: [3980, 4050, 3950, 4020],
-  },
-  {
-    x: new Date("2025-06-03"),
-    y: [4020, 4100, 3990, 4080],
-  },
-  {
-    x: new Date("2025-06-04"),
-    y: [4080, 4150, 4050, 4120],
-  },
-];
+  
 const removeStock = (index) => {
 
   const updatedPortfolio =
@@ -379,6 +392,7 @@ if (savedPortfolio) {
     fetchNews("TCS");
     fetchRecommendation("TCS");
     fetchSentiment("TCS");
+    fetchHistory("TCS");
     fetchMarketStocks();
 
     const interval = setInterval(() => {
@@ -387,6 +401,7 @@ if (savedPortfolio) {
       fetchNews(symbol);
       fetchRecommendation(symbol);
       fetchSentiment(symbol);
+      fetchHistory(symbol);
       fetchMarketStocks();
 
     }, 60000);
@@ -510,6 +525,7 @@ const totalProfit =
             fetchNews(symbol);
             fetchRecommendation(symbol);
             fetchSentiment(symbol);
+            fetchHistory(symbol);
           }}
           className="bg-blue-600 px-5 py-3 rounded-xl hover:bg-blue-700"
         >
@@ -539,7 +555,7 @@ const totalProfit =
               fetchNews(s);
               fetchRecommendation(s);
               fetchSentiment(s);
-
+              fetchHistory(s);
             }}
             className="bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700"
           >
@@ -986,7 +1002,7 @@ const totalProfit =
   </h2>
 
   <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
-    <CandlestickChart data={sampleData} />
+    <CandlestickChart data={chartData} />
   </div>
 </div>
 
@@ -1262,6 +1278,7 @@ const totalProfit =
             fetchNews(selected);
             fetchRecommendation(selected);
             fetchSentiment(selected);
+            fetchHistory(selected);
 
           }}
         />

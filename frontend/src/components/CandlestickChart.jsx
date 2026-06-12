@@ -1,35 +1,47 @@
 import React from "react";
+import Chart from "react-apexcharts";
 
 function CandlestickChart({ data }) {
+  const series = [
+    {
+      data: data,
+    },
+  ];
+
+  const options = {
+    chart: {
+      type: "candlestick",
+      height: 500,
+      background: "#0f172a",
+    },
+
+    theme: {
+      mode: "dark",
+    },
+
+    xaxis: {
+      type: "datetime",
+    },
+
+    yaxis: {
+      tooltip: {
+        enabled: true,
+      },
+    },
+  };
+
   return (
-    <div className="bg-slate-800 p-8 rounded-xl text-center">
-      <h3 className="text-2xl font-bold text-blue-400">
-        Stock Price Chart
-      </h3>
+    <div className="bg-slate-900 p-6 rounded-xl">
+      <h2 className="text-2xl font-bold mb-4">
+        Candlestick Chart
+      </h2>
 
-      <p className="mt-4 text-slate-300">
-        Candlestick chart coming in Week 5
-      </p>
-
-      <div className="mt-6">
-        {data.map((item, index) => (
-          <div
-            key={index}
-            className="flex justify-between border-b border-slate-700 py-2"
-          >
-            <span>
-              {item.x.toLocaleDateString()}
-            </span>
-
-            <span>
-              Open: ₹{item.y[0]} |
-              High: ₹{item.y[1]} |
-              Low: ₹{item.y[2]} |
-              Close: ₹{item.y[3]}
-            </span>
-          </div>
-        ))}
-      </div>
+      <Chart
+        options={options}
+        series={series}
+        type="candlestick"
+        height={500}
+      />
     </div>
   );
 }
