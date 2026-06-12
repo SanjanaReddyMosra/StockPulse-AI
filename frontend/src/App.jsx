@@ -426,6 +426,17 @@ if (savedPortfolio) {
         riskResult
       )
     : "";
+  
+  const fearGreedValue =
+  sentiment?.average_sentiment || 0;
+
+let marketMood = "Neutral";
+
+if (fearGreedValue > 0.3)
+  marketMood = "Greed";
+
+if (fearGreedValue < -0.3)
+  marketMood = "Fear";
 
   const totalInvestment = portfolio.reduce(
   (sum, item) =>
@@ -454,14 +465,50 @@ const totalProfit =
       </h1>
 
       <p className="text-slate-400 mt-3">
-        Real-Time Indian Stock Analytics
+        Predict • Analyze • Invest Smarter
       </p>
-
-      
 
       <p className="text-green-400 mt-2">
         Last Updated: {lastUpdated}
       </p>
+
+      <div className="grid md:grid-cols-4 gap-4 mt-6">
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <h3 className="text-2xl font-bold">20+</h3>
+    <p className="text-slate-400">
+      NSE Stocks
+    </p>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <h3 className="text-2xl font-bold">
+      AI
+    </h3>
+    <p className="text-slate-400">
+      Predictions
+    </p>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <h3 className="text-2xl font-bold">
+      Live
+    </h3>
+    <p className="text-slate-400">
+      News Analysis
+    </p>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <h3 className="text-2xl font-bold">
+      Portfolio
+    </h3>
+    <p className="text-slate-400">
+      Tracking
+    </p>
+  </div>
+
+</div>
 
       <div className="grid md:grid-cols-5 gap-4 mt-8">
 
@@ -504,6 +551,15 @@ const totalProfit =
       {recommendation?.recommendation}
     </h3>
   </div>
+  <div className="bg-slate-900 p-4 rounded-xl">
+  <p className="text-slate-400">
+    Sentiment
+  </p>
+
+  <h3 className="text-2xl font-bold">
+    {sentiment?.label}
+  </h3>
+</div>
 
 </div>
 
@@ -631,6 +687,51 @@ const totalProfit =
             </h1>
 
           </div>
+          <div className="mt-8 bg-slate-900 p-6 rounded-2xl">
+
+  <h2 className="text-2xl font-bold mb-4">
+    AI Insights
+  </h2>
+
+  <div className="grid md:grid-cols-3 gap-4">
+
+    <div>
+      <p className="text-slate-400">
+        Recommendation
+      </p>
+
+      <h3 className="text-xl font-bold">
+        {signalResult?.signal}
+      </h3>
+    </div>
+
+    <div>
+      <p className="text-slate-400">
+        Confidence
+      </p>
+
+      <h3 className="text-xl font-bold">
+        {signalResult?.confidence}%
+      </h3>
+    </div>
+
+    <div>
+      <p className="text-slate-400">
+        Risk
+      </p>
+
+      <h3 className="text-xl font-bold">
+        {riskResult?.risk}
+      </h3>
+    </div>
+
+  </div>
+
+  <p className="mt-6 text-slate-300">
+    {aiInsight}
+  </p>
+
+</div>
 
           {/* Price Information */}
 
@@ -866,7 +967,27 @@ const totalProfit =
 
 </div>
 
+
 )}
+<div className="bg-slate-900 p-6 rounded-2xl mt-6">
+
+  <h2 className="text-xl font-bold">
+    Market Mood
+  </h2>
+
+  <p
+  className={`mt-3 text-3xl font-bold ${
+    marketMood === "Greed"
+      ? "text-green-400"
+      : marketMood === "Fear"
+      ? "text-red-400"
+      : "text-yellow-400"
+  }`}
+>
+  {marketMood}
+</p>
+
+</div>
 
 {recommendation && (
 
@@ -978,21 +1099,6 @@ const totalProfit =
 </div>
 )}
 
-<div className="mt-8 bg-slate-800 p-6 rounded-xl border border-slate-700">
-
-  <h2 className="text-2xl font-bold mb-4">
-    AI Market Insights
-  </h2>
-
-  <div className="bg-slate-900 p-5 rounded-xl">
-
-    <p className="text-slate-300 leading-8">
-      {aiInsight}
-    </p>
-
-  </div>
-
-</div>
 
       {/* Candlestick Chart */}
 
@@ -1066,7 +1172,10 @@ const totalProfit =
   <h2 className="text-3xl font-bold mb-6">
     Portfolio Tracker
   </h2>
-
+  <p className="text-yellow-400 mb-4">
+⚠ Current valuation uses the selected stock price.
+Multi-stock live valuation will be added next.
+</p>
   <div className="bg-slate-900 p-6 rounded-2xl">
 
     <div className="grid md:grid-cols-4 gap-4">
@@ -1259,7 +1368,74 @@ const totalProfit =
 </div>
 
 </div>
+      
+      <div className="mt-12">
 
+  <h2 className="text-3xl font-bold mb-6">
+    Top Movers
+  </h2>
+
+  <div className="grid md:grid-cols-2 gap-6">
+
+    <div className="bg-slate-900 p-6 rounded-2xl">
+
+      <h3 className="text-green-400 text-2xl mb-4">
+        Top Gainers
+      </h3>
+
+      {stocks
+        .filter(stock => stock.percent > 0)
+        .sort((a,b) => b.percent - a.percent)
+        .slice(0,5)
+        .map(stock => (
+
+          <div
+            key={stock.symbol}
+            className="flex justify-between py-2"
+          >
+            <span>{stock.symbol}</span>
+
+            <span className="text-green-400">
+              +{stock.percent}%
+            </span>
+
+          </div>
+
+      ))}
+
+    </div>
+
+    <div className="bg-slate-900 p-6 rounded-2xl">
+
+      <h3 className="text-red-400 text-2xl mb-4">
+        Top Losers
+      </h3>
+
+      {stocks
+        .filter(stock => stock.percent < 0)
+        .sort((a,b) => a.percent - b.percent)
+        .slice(0,5)
+        .map(stock => (
+
+          <div
+            key={stock.symbol}
+            className="flex justify-between py-2"
+          >
+            <span>{stock.symbol}</span>
+
+            <span className="text-red-400">
+              {stock.percent}%
+            </span>
+
+          </div>
+
+      ))}
+
+    </div>
+
+  </div>
+
+</div>
       {/* Market Overview */}
 
       <div className="mt-12">
