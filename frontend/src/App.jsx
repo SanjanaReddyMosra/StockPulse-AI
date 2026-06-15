@@ -4,7 +4,7 @@ import MarketGrid from "./components/MarketGrid";
 import MarketStatus from "./components/MarketStatus";
 import RecentSignals from "./components/RecentSignals";
 import CandlestickChart from "./components/CandlestickChart";
-
+import PortfolioChart from "./components/PortfolioChart";
 const calculateSignal = (stock) => {
   let score = 0;
   let reasons = [];
@@ -180,6 +180,8 @@ const [chartData, setChartData] =
 const [sentiment, setSentiment] =
   useState(null);
   const [portfolio, setPortfolio] = useState([]);
+  const [watchlist, setWatchlist] =
+  useState([]);
 
 const [portfolioSymbol, setPortfolioSymbol] =
   useState("");
@@ -189,6 +191,8 @@ const [quantity, setQuantity] =
 
 const [buyPrice, setBuyPrice] =
   useState("");
+  const [portfolioPrices, setPortfolioPrices] =
+  useState({});
   const fetchHistory = async (
   stockSymbol
 ) => {
@@ -325,6 +329,33 @@ const fetchSentiment = async (
 
 };
 
+const fetchPortfolioPrices = async () => {
+
+  try {
+
+    const prices = {};
+
+    for (const item of portfolio) {
+
+      const response =
+        await API.get(
+          `/stock/${item.symbol}`
+        );
+
+      prices[item.symbol] =
+        response.data.price;
+    }
+
+    setPortfolioPrices(prices);
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+
 const addToPortfolio = () => {
 
   if (
@@ -378,15 +409,62 @@ const removeStock = (index) => {
   );
 
 };
+const addToWatchlist = () => {
+
+  const stockSymbol =
+    symbol.toUpperCase();
+
+  if (
+    watchlist.includes(stockSymbol)
+  )
+    return;
+
+  const updated = [
+    ...watchlist,
+    stockSymbol
+  ];
+
+  setWatchlist(updated);
+
+  localStorage.setItem(
+    "watchlist",
+    JSON.stringify(updated)
+  );
+
+};
+const removeWatchlist = (
+  stockSymbol
+) => {
+
+  const updated =
+    watchlist.filter(
+      item =>
+        item !== stockSymbol
+    );
+
+  setWatchlist(updated);
+
+  localStorage.setItem(
+    "watchlist",
+    JSON.stringify(updated)
+  );
+
+};
 
   useEffect(() => {
     const savedPortfolio =
   localStorage.getItem("portfolio");
+const savedWatchlist =
+  localStorage.getItem("watchlist");
 
-if (savedPortfolio) {
-  setPortfolio(
-    JSON.parse(savedPortfolio)
+if (savedWatchlist) {
+  setWatchlist(
+    JSON.parse(savedWatchlist)
   );
+}
+if (savedPortfolio) {
+  const parsed= JSON.parse(savedPortfolio);
+  setPortfolio(parsed);
 }
     fetchStock("TCS");
     fetchNews("TCS");
@@ -403,13 +481,20 @@ if (savedPortfolio) {
       fetchSentiment(symbol);
       fetchHistory(symbol);
       fetchMarketStocks();
+      fetchPortfolioPrices();
 
     }, 60000);
 
     return () => clearInterval(interval);
 
   }, [symbol]);
+useEffect(() => {
 
+  if (portfolio.length > 0) {
+    fetchPortfolioPrices();
+  }
+
+}, [portfolio]);
   const signalResult =
   stock ? calculateSignal(stock) : null;
 
@@ -444,13 +529,16 @@ if (fearGreedValue < -0.3)
   0
 );
 
-const totalCurrentValue = portfolio.reduce(
-  (sum, item) =>
-    sum +
-    (stock?.price || 0) *
+const totalCurrentValue =
+  portfolio.reduce(
+    (sum, item) =>
+      sum +
+      (portfolioPrices[
+        item.symbol
+      ] || 0) *
       item.quantity,
-  0
-);
+    0
+  );
 
 const totalProfit =
   totalCurrentValue -
@@ -685,7 +773,12 @@ const totalProfit =
             >
               ₹ {stock.price}
             </h1>
-
+<button
+  onClick={addToWatchlist}
+  className="mt-4 bg-yellow-600 px-4 py-2 rounded-xl hover:bg-yellow-700"
+>
+  ⭐ Add to Watchlist
+</button>
           </div>
           <div className="mt-8 bg-slate-900 p-6 rounded-2xl">
 
@@ -1166,16 +1259,108 @@ const totalProfit =
   </div>
 
       </div>
+      <div className="mt-12">
+
+  <h2 className="text-3xl font-bold mb-6">
+    My Watchlist
+  </h2>
+
+  {watchlist.length === 0 ? (
+
+    <div className="bg-slate-900 p-6 rounded-2xl text-slate-400">
+      No stocks in watchlist
+    </div>
+
+  ) : (
+
+    <div className="grid md:grid-cols-4 gap-4">
+
+      {watchlist.map(item => (
+
+        <div
+          key={item}
+          className="bg-slate-900 p-4 rounded-xl"
+        >
+
+          <h3 className="text-xl font-bold">
+            {item}
+          </h3>
+
+          <div className="flex gap-2 mt-3">
+
+            <button
+              onClick={() => {
+
+                setSymbol(item);
+
+                fetchStock(item);
+                fetchNews(item);
+                fetchRecommendation(item);
+                fetchSentiment(item);
+                fetchHistory(item);
+
+              }}
+              className="bg-blue-600 px-3 py-1 rounded"
+            >
+              Open
+            </button>
+
+            <button
+              onClick={() =>
+                removeWatchlist(item)
+              }
+              className="bg-red-600 px-3 py-1 rounded"
+            >
+              Remove
+            </button>
+
+          </div>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  )}
+
+</div>
 
       <div className="mt-12">
 
   <h2 className="text-3xl font-bold mb-6">
     Portfolio Tracker
   </h2>
-  <p className="text-yellow-400 mb-4">
-⚠ Current valuation uses the selected stock price.
-Multi-stock live valuation will be added next.
-</p>
+  <div className="grid md:grid-cols-3 gap-4 mb-6">
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p>Total Holdings</p>
+    <h3 className="text-2xl font-bold">
+      {portfolio.length}
+    </h3>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p>Total Quantity</p>
+    <h3 className="text-2xl font-bold">
+      {
+        portfolio.reduce(
+          (sum,item)=>sum+item.quantity,
+          0
+        )
+      }
+    </h3>
+  </div>
+
+  <div className="bg-slate-900 p-4 rounded-xl">
+    <p>Total Invested</p>
+    <h3 className="text-2xl font-bold">
+      ₹{totalInvestment.toFixed(2)}
+    </h3>
+  </div>
+
+</div>
+  
   <div className="bg-slate-900 p-6 rounded-2xl">
 
     <div className="grid md:grid-cols-4 gap-4">
@@ -1245,76 +1430,97 @@ Multi-stock live valuation will be added next.
 
     <tbody>
 
-      {portfolio.map((item, index) => (
+{portfolio.length === 0 ? (
 
-        <tr
-          key={index}
-          className="border-t border-slate-700"
+  <tr>
+    <td
+      colSpan="7"
+      className="text-center py-8 text-slate-400"
+    >
+      No stocks added yet
+    </td>
+  </tr>
+
+) : (
+
+  portfolio.map((item, index) => (
+
+    <tr
+      key={index}
+      className="border-t border-slate-700"
+    >
+
+      <td className="py-3">
+        {item.symbol}
+      </td>
+
+      <td>
+        {item.quantity}
+      </td>
+
+      <td>
+        ₹{item.buyPrice}
+      </td>
+
+      <td>
+        ₹{portfolioPrices[
+      item.symbol
+    ] || "Loading..."}
+      </td>
+
+      <td>
+        <span
+          className={`px-2 py-1 rounded text-sm ${
+            riskResult?.risk === "Low"
+              ? "bg-green-500/20 text-green-400"
+              : riskResult?.risk === "Medium"
+              ? "bg-yellow-500/20 text-yellow-400"
+              : "bg-red-500/20 text-red-400"
+          }`}
         >
+          {riskResult?.risk}
+        </span>
+      </td>
 
-          <td className="py-3">
-  {item.symbol}
-</td>
+      <td
+        className={
+          portfolioPrices[item.symbol] > item.buyPrice
+            ? "text-green-400"
+            : "text-red-400"
+        }
+      >
+        ₹{
+          (
+            (
+ (portfolioPrices[
+   item.symbol
+ ] || 0)
+ -
+ item.buyPrice
+) *
+            item.quantity
+          ).toFixed(2)
+        }
+      </td>
 
-<td>
-  {item.quantity}
-</td>
+      <td>
+        <button
+          onClick={() =>
+            removeStock(index)
+          }
+          className="bg-red-600 px-3 py-1 rounded"
+        >
+          Remove
+        </button>
+      </td>
 
-<td>
-  ₹{item.buyPrice}
-</td>
+    </tr>
 
-<td>
-  ₹{stock?.price}
-</td>
+  ))
 
-<td>
-  <span
-    className={`px-2 py-1 rounded text-sm ${
-      riskResult?.risk === "Low"
-        ? "bg-green-500/20 text-green-400"
-        : riskResult?.risk === "Medium"
-        ? "bg-yellow-500/20 text-yellow-400"
-        : "bg-red-500/20 text-red-400"
-    }`}
-  >
-    {riskResult?.risk}
-  </span>
-</td>
+)}
 
-<td
-  className={
-    stock?.price > item.buyPrice
-      ? "text-green-400"
-      : "text-red-400"
-  }
->
-  ₹
-  {
-    (
-  ((stock?.price || 0) -
-    item.buyPrice) *
-  item.quantity
-).toFixed(2)}
-</td>
-
-<td>
-  <button
-    onClick={() =>
-      removeStock(index)
-    }
-    className="bg-red-600 px-3 py-1 rounded"
-  >
-    Remove
-  </button>
-</td>
-
-        </tr>
-
-      ))}
-
-    </tbody>
-
+</tbody>
   </table>
 
 </div>
@@ -1366,8 +1572,20 @@ Multi-stock live valuation will be added next.
   </div>
 
 </div>
+<div className="mt-8 bg-slate-900 p-6 rounded-2xl">
+
+  <h2 className="text-2xl font-bold mb-4">
+    Portfolio Allocation
+  </h2>
+
+  <PortfolioChart
+    portfolio={portfolio}
+  />
 
 </div>
+
+</div>
+
       
       <div className="mt-12">
 
