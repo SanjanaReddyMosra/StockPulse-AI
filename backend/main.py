@@ -46,6 +46,7 @@ def stock(symbol: str):
             interval="1d"
         )
 
+
         if hist.empty:
             return {
                 "error": "Stock not found"
@@ -114,6 +115,7 @@ def stock(symbol: str):
         }
 
     except Exception as e:
+        print(f"Error fetching stock data for {symbol}: {e}")
 
         return {
             "error": str(e)
