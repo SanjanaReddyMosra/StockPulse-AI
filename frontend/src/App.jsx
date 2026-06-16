@@ -1685,16 +1685,31 @@ const totalProfit =
         <RecentSignals />
 
       </div>
-            <footer className="mt-20 text-center text-slate-500">
+<footer className="mt-16 border-t border-slate-800 py-8 text-center text-slate-400">
 
-        Built with React + FastAPI + Machine Learning
+  <h3 className="text-lg font-semibold text-white">
+    StockPulse AI
+  </h3>
 
-      </footer>
+  <p className="mt-2">
+    Real-Time Market Intelligence & AI-Powered Stock Analysis
+  </p>
+
+  <p className="mt-3 text-sm">
+    Built with React, FastAPI, Machine Learning, Sentiment Analysis & Yahoo Finance
+  </p>
+
+  <p className="mt-3 text-sm">
+    © 2026 StockPulse AI • Developed by Sanjana Reddy
+  </p>
+
+</footer>
 
     </div>
 
   );
 
 }
+
 
 export default App;
