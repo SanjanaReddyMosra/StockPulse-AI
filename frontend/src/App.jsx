@@ -513,7 +513,7 @@ useEffect(() => {
     : "";
   
   const fearGreedValue =
-  sentiment?.average_sentiment || 0;
+  sentiment?.score || 0;
 
 let marketMood = "Neutral";
 
@@ -1306,9 +1306,7 @@ const totalProfit =
             </button>
 
             <button
-              onClick={() =>
-                removeWatchlist(item)
-              }
+              onClick={() => removeWatchlist(item)}
               className="bg-red-600 px-3 py-1 rounded"
             >
               Remove
@@ -1325,7 +1323,6 @@ const totalProfit =
   )}
 
 </div>
-
       <div className="mt-12">
 
   <h2 className="text-3xl font-bold mb-6">
