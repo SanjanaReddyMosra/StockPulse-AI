@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "./api/stockApi";
+import API from "./api/stockAPI";
 import MarketGrid from "./components/MarketGrid";
 import MarketStatus from "./components/MarketStatus";
 import RecentSignals from "./components/RecentSignals";
