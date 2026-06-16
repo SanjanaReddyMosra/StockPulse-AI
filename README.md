@@ -2,7 +2,7 @@
 
 AI-Powered Stock Market Analytics Platform for Indian NSE Stocks.
 
-StockPulse AI combines real-time market data, technical analysis, sentiment analysis, machine learning predictions, and portfolio tracking into a modern fintech dashboard.
+StockPulse AI is a full-stack fintech application that combines real-time market data, technical analysis, sentiment analysis, machine learning predictions, portfolio tracking, and watchlist management into a modern investment dashboard.
 
 ## Live Demo
 
@@ -18,9 +18,9 @@ https://stockpulse-ai-p2py.onrender.com
 
 ### Real-Time Market Dashboard
 
-* Live NSE Stock Tracking
+* Live NSE Stock Prices
 * Market Overview Dashboard
-* Market Status Indicator
+* Market Status Tracking
 * Quick Stock Selection
 * Auto Refresh System
 
@@ -29,52 +29,51 @@ https://stockpulse-ai-p2py.onrender.com
 * RSI (Relative Strength Index)
 * SMA20 Indicator
 * SMA50 Indicator
+* Trend Detection
 * Daily Return Analysis
-* Trend Detection (Bullish / Bearish)
 
 ### AI Trading Signals
 
 * Buy Signals
 * Sell Signals
 * Hold Signals
-* Confidence Score
+* Confidence Scoring
 * Risk Assessment
-* AI Recommendation Engine
+* Recommendation Engine
 
 ### Sentiment Analysis
 
 * Financial News Analysis
-* Positive / Negative / Neutral Sentiment
-* Sentiment Score Calculation
-* News-Based Market Insights
+* Positive / Negative / Neutral Classification
+* Sentiment Scoring
+* Market Sentiment Insights
 
 ### Machine Learning Prediction
 
 * Random Forest Prediction Model
-* Next-Day Price Direction Prediction
+* Stock Movement Forecasting
 * Confidence Estimation
-* Historical Data Training
+* Feature-Based Analysis
 
 ### Portfolio Management
 
 * Portfolio Tracking
 * Holdings Management
-* Profit & Loss Calculation
+* Profit & Loss Monitoring
 * Local Storage Persistence
 
 ### Watchlist Management
 
-* Add Stocks to Watchlist
-* Remove Stocks from Watchlist
-* Quick Access Monitoring
-* Persistent Storage
+* Add / Remove Stocks
+* Persistent Watchlist
+* Quick Stock Access
 
-### Interactive Visualization
+### Interactive Analytics
 
-* Stock Price Charts
-* Historical Data Analysis
-* Responsive Dashboard Components
+* Historical Data Visualization
+* Responsive Charts
 * Modern Fintech User Interface
+* Mobile-Friendly Design
 
 ---
 
@@ -93,7 +92,7 @@ https://stockpulse-ai-p2py.onrender.com
 * FastAPI
 * Python
 * yFinance
-* TA (Technical Analysis Library)
+* TA Library
 * TextBlob
 
 ### Machine Learning
@@ -109,94 +108,43 @@ https://stockpulse-ai-p2py.onrender.com
 
 ---
 
-## Project Architecture
-
-StockPulse-AI
-
-├── frontend/
-
-│   ├── src/
-
-│   ├── components/
-
-│   ├── api/
-
-│   └── assets/
-
-│
-
-├── backend/
-
-│   ├── services/
-
-│   ├── main.py
-
-│   ├── requirements.txt
-
-│   └── .env
-
-│
-
-└── README.md
-
----
-
 ## API Endpoints
 
-### Stock Data
-
-GET /stock/{symbol}
-
-### Market Stocks
-
-GET /stocks
-
-### News
-
-GET /news/{symbol}
-
-### Sentiment
-
-GET /sentiment/{symbol}
-
-### Prediction
-
-GET /predict/{symbol}
-
-### Recommendation
-
-GET /recommendation/{symbol}
-
-### Historical Data
-
-GET /history/{symbol}
+* GET /stocks
+* GET /stock/{symbol}
+* GET /news/{symbol}
+* GET /sentiment/{symbol}
+* GET /predict/{symbol}
+* GET /recommendation/{symbol}
+* GET /history/{symbol}
 
 ---
 
-## Key Highlights
+## Project Highlights
 
-* Full Stack Fintech Application
-* Real-Time Stock Analytics
+* Full-Stack FinTech Application
+* Real-Time Market Data Processing
+* Technical Analysis Automation
 * Machine Learning Integration
-* Sentiment Analysis Engine
-* Portfolio Management System
-* Production Deployment
-* Responsive Modern UI
+* News Sentiment Analysis
+* Portfolio & Watchlist Management
+* Cloud Deployment Architecture
+* Responsive Modern Dashboard
 
 ---
 
-## Future Enhancements
+## Roadmap
 
-### Phase 2
+### Upcoming Features
 
 * User Authentication
-* MongoDB Database Integration
-* Portfolio Performance Analytics
+* Database Integration
+* Advanced Candlestick Charts
 * Price Alerts & Notifications
-* Advanced Candlestick Patterns
-* AI Chat Assistant for Stocks
-* Stock Comparison Engine
-* PDF Portfolio Reports
+* Portfolio Analytics
+* AI Stock Comparison Tool
+* Exportable Portfolio Reports
+* AI Investment Assistant
 
 ---
 
@@ -204,6 +152,6 @@ GET /history/{symbol}
 
 Sanjana Reddy
 
-Full Stack Development | Machine Learning | FinTech
+Full Stack Developer | FinTech Enthusiast | Machine Learning Learner
 
-Built with React, FastAPI, Python, Machine Learning, and Financial Data Analytics.
+Built using React, FastAPI, Python, Machine Learning, and Financial Market Analytics.
