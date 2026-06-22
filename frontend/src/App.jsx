@@ -201,7 +201,14 @@ const [buyPrice, setBuyPrice] =
       await API.get(
         `/history/${stockSymbol}`
       );
-
+if (
+  !response.data ||
+  !response.data.history ||
+  response.data.history.length === 0
+) {
+  setChartData([]);
+  return;
+}
     const formatted =
       response.data.history.map(
         (item) => ({
@@ -233,16 +240,18 @@ const [buyPrice, setBuyPrice] =
         await API.get(`/stock/${stockSymbol}`);
 
       setStock(response.data);
-
+      setError("");
       setLastUpdated(
         new Date().toLocaleTimeString()
       );
 
-    } catch (err) {
-
-      setError("Stock not found");
+    }catch (err) {
+  console.log(err);
+  setError("Stock not found");
+  setStock(null);
 
     }
+    
 
     setLoading(false);
 
@@ -543,6 +552,14 @@ const totalCurrentValue =
 const totalProfit =
   totalCurrentValue -
   totalInvestment;
+const searchStock = async () => {
+  await fetchStock(symbol);
+
+  fetchNews(symbol);
+  fetchRecommendation(symbol);
+  fetchSentiment(symbol);
+  fetchHistory(symbol);
+};
 
   return (
 
@@ -664,13 +681,7 @@ const totalProfit =
         />
 
         <button
-          onClick={() => {
-            fetchStock(symbol);
-            fetchNews(symbol);
-            fetchRecommendation(symbol);
-            fetchSentiment(symbol);
-            fetchHistory(symbol);
-          }}
+          onClick={searchStock}
           className="bg-blue-600 px-5 py-3 rounded-xl hover:bg-blue-700"
         >
           Search
@@ -1201,7 +1212,9 @@ const totalProfit =
   </h2>
 
   <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
-    <CandlestickChart data={chartData} />
+    {chartData.length > 0 && (
+  <CandlestickChart data={chartData} />
+)}
   </div>
 </div>
 
