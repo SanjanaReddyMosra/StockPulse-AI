@@ -252,9 +252,9 @@ if (
 
     }
     
-
+finally{
     setLoading(false);
-
+}
   };
 
   const fetchMarketStocks = async () => {
