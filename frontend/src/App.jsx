@@ -233,7 +233,6 @@ if (
 
     setLoading(true);
     setError("");
-
     try {
 
       const response =
@@ -244,9 +243,10 @@ if (
       setLastUpdated(
         new Date().toLocaleTimeString()
       );
-
+      
     }catch (err) {
   console.log(err);
+  setLoading(false);
   setError("Stock not found");
   setStock(null);
 
@@ -577,7 +577,7 @@ const searchStock = async () => {
         Last Updated: {lastUpdated}
       </p>
 
-      <div className="grid md:grid-cols-4 gap-4 mt-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
 
   <div className="bg-slate-900 p-4 rounded-xl">
     <h3 className="text-2xl font-bold">20+</h3>
@@ -615,7 +615,7 @@ const searchStock = async () => {
 
 </div>
 
-      <div className="grid md:grid-cols-5 gap-4 mt-8">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
 
   <div className="bg-slate-900 p-4 rounded-xl">
     <p className="text-slate-400">
@@ -735,10 +735,19 @@ const searchStock = async () => {
 
       {error && (
 
-        <div className="mt-8 text-red-400">
-          {error}
-        </div>
-
+        <div
+    className="
+    mt-8
+    bg-red-900/30
+    border
+    border-red-500
+    text-red-300
+    p-4
+    rounded-xl
+    "
+  >
+    {error}
+  </div>
       )}
 
       {/* Selected Stock Card */}
@@ -839,7 +848,7 @@ const searchStock = async () => {
 
           {/* Price Information */}
 
-          <div className="grid md:grid-cols-4 gap-4 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
               <p className="text-slate-400">
@@ -885,7 +894,7 @@ const searchStock = async () => {
 
           {/* Technical Indicators */}
 
-          <div className="grid md:grid-cols-4 gap-4 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
 
             <div className="bg-slate-800 p-4 rounded-xl hover:bg-slate-700 hover:scale-105 transition-all duration-300">
 
@@ -1212,9 +1221,15 @@ const searchStock = async () => {
   </h2>
 
   <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
-    {chartData.length > 0 && (
-  <CandlestickChart data={chartData} />
-)}
+  {
+  chartData.length > 0 ? (
+    <CandlestickChart data={chartData} />
+  ) : (
+    <div className="p-10 text-center text-slate-400">
+      No Chart Data Available
+    </div>
+  )
+}
   </div>
 </div>
 
@@ -1286,7 +1301,7 @@ const searchStock = async () => {
 
   ) : (
 
-    <div className="grid md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
       {watchlist.map(item => (
 
@@ -1373,7 +1388,7 @@ const searchStock = async () => {
   
   <div className="bg-slate-900 p-6 rounded-2xl">
 
-    <div className="grid md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
       <input
         type="text"
@@ -1479,18 +1494,10 @@ const searchStock = async () => {
       </td>
 
       <td>
-        <span
-          className={`px-2 py-1 rounded text-sm ${
-            riskResult?.risk === "Low"
-              ? "bg-green-500/20 text-green-400"
-              : riskResult?.risk === "Medium"
-              ? "bg-yellow-500/20 text-yellow-400"
-              : "bg-red-500/20 text-red-400"
-          }`}
-        >
-          {riskResult?.risk}
-        </span>
-      </td>
+  <span className="text-slate-400">
+    -
+  </span>
+</td>
 
       <td
         className={
