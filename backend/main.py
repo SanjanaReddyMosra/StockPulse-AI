@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 import requests
 import os
-
+from database import watchlists
+from database import portfolios
 from dotenv import load_dotenv
 
 from services.data_loader import get_history
@@ -11,6 +12,11 @@ from services.features import calculate_features
 from services.sentiment import analyze_sentiment
 from services.predictor import predict_stock
 from services.recommendation import get_recommendation
+from database import users
+from auth import (
+    hash_password,
+    verify_password
+)
 
 load_dotenv()
 
@@ -120,6 +126,74 @@ def stock(symbol: str):
         return {
             "error": str(e)
         }
+
+@app.post("/register")
+def register(data: dict):
+
+    existing = users.find_one({
+        "email": data["email"]
+    })
+
+    if existing:
+        return {
+            "error":
+            "User already exists"
+        }
+
+    users.insert_one({
+        "name":
+        data["name"],
+
+        "email":
+        data["email"],
+
+        "password":
+        hash_password(
+            data["password"]
+        )
+    })
+
+    return {
+        "message":
+        "User Registered"
+    }
+
+@app.post("/login")
+def login(data: dict):
+
+    user = users.find_one({
+        "email":
+        data["email"]
+    })
+
+    if not user:
+        return {
+            "error":
+            "Invalid Credentials"
+        }
+
+    if not verify_password(
+        data["password"],
+        user["password"]
+    ):
+        return {
+            "error":
+            "Invalid Credentials"
+        }
+
+    return {
+        "message":
+        "Login Successful",
+
+        "user":
+        {
+            "name":
+            user["name"],
+
+            "email":
+            user["email"]
+        }
+    }
 
 
 @app.get("/news/{symbol}")
@@ -249,6 +323,51 @@ def history(symbol: str):
         "history": data
     }
 
+@app.post("/watchlist")
+def save_watchlist(data: dict):
+
+    watchlists.delete_many({})
+
+    watchlists.insert_one(data)
+
+    return {
+        "message": "Watchlist Saved"
+    }
+
+@app.get("/watchlist")
+def get_watchlist():
+
+    item = watchlists.find_one()
+
+    if not item:
+        return []
+
+    item.pop("_id")
+
+    return item
+
+@app.post("/portfolio")
+def save_portfolio(data: dict):
+
+    portfolios.delete_many({})
+
+    portfolios.insert_one(data)
+
+    return {
+        "message": "Portfolio Saved"
+    }
+
+@app.get("/portfolio")
+def get_portfolio():
+
+    item = portfolios.find_one()
+
+    if not item:
+        return []
+
+    item.pop("_id")
+
+    return item
 
 @app.get("/stocks")
 def get_stocks():

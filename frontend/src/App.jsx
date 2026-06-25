@@ -418,7 +418,7 @@ const removeStock = (index) => {
   );
 
 };
-const addToWatchlist = () => {
+const addToWatchlist = async () => {
 
   const stockSymbol =
     symbol.toUpperCase();
@@ -435,13 +435,19 @@ const addToWatchlist = () => {
 
   setWatchlist(updated);
 
-  localStorage.setItem(
-    "watchlist",
-    JSON.stringify(updated)
+try {
+  await API.post(
+    "/watchlist",
+    {
+      stocks: updated
+    }
   );
+} catch (error) {
+  console.log(error);
+}
 
 };
-const removeWatchlist = (
+const removeWatchlist = async (
   stockSymbol
 ) => {
 
@@ -453,50 +459,45 @@ const removeWatchlist = (
 
   setWatchlist(updated);
 
-  localStorage.setItem(
-    "watchlist",
-    JSON.stringify(updated)
+  try {
+  await API.post(
+    "/watchlist",
+    {
+      stocks: updated
+    }
   );
-
+} catch (error) {
+  console.log(error);
+}
 };
 
   useEffect(() => {
-    const savedPortfolio =
-  localStorage.getItem("portfolio");
-const savedWatchlist =
-  localStorage.getItem("watchlist");
 
-if (savedWatchlist) {
-  setWatchlist(
-    JSON.parse(savedWatchlist)
-  );
-}
-if (savedPortfolio) {
-  const parsed= JSON.parse(savedPortfolio);
-  setPortfolio(parsed);
-}
-    fetchStock("TCS");
-    fetchNews("TCS");
-    fetchRecommendation("TCS");
-    fetchSentiment("TCS");
-    fetchHistory("TCS");
-    fetchMarketStocks();
+  const loadWatchlist = async () => {
 
-    const interval = setInterval(() => {
+    try {
 
-      fetchStock(symbol);
-      fetchNews(symbol);
-      fetchRecommendation(symbol);
-      fetchSentiment(symbol);
-      fetchHistory(symbol);
-      fetchMarketStocks();
-      fetchPortfolioPrices();
+      const response =
+        await API.get("/watchlist");
 
-    }, 60000);
+      if (
+        response.data &&
+        response.data.stocks
+      ) {
+        setWatchlist(
+          response.data.stocks
+        );
+      }
 
-    return () => clearInterval(interval);
+    } catch (error) {
+      console.log(error);
+    }
 
-  }, [symbol]);
+  };
+
+  loadWatchlist();
+
+}, []);
 useEffect(() => {
 
   if (portfolio.length > 0) {
