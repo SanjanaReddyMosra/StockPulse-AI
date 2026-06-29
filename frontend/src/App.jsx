@@ -5,6 +5,15 @@ import MarketStatus from "./components/MarketStatus";
 import RecentSignals from "./components/RecentSignals";
 import CandlestickChart from "./components/CandlestickChart";
 import PortfolioChart from "./components/PortfolioChart";
+import {
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
 const calculateSignal = (stock) => {
   let score = 0;
   let reasons = [];
@@ -182,7 +191,8 @@ const [sentiment, setSentiment] =
   const [portfolio, setPortfolio] = useState([]);
   const [watchlist, setWatchlist] =
   useState([]);
-
+const [user, setUser] =
+useState(null);
 const [portfolioSymbol, setPortfolioSymbol] =
   useState("");
 
@@ -471,6 +481,21 @@ const removeWatchlist = async (
 }
 };
 
+useEffect(() => {
+
+  const savedUser =
+    localStorage.getItem("user");
+
+  if (savedUser) {
+
+    setUser(
+      JSON.parse(savedUser)
+    );
+
+  }
+
+}, []);
+
   useEffect(() => {
 
   const loadWatchlist = async () => {
@@ -553,6 +578,16 @@ const totalCurrentValue =
 const totalProfit =
   totalCurrentValue -
   totalInvestment;
+
+  const logout = () => {
+
+  localStorage.removeItem("user");
+
+  setUser(null);
+
+};
+
+
 const searchStock = async () => {
   await fetchStock(symbol);
 
@@ -562,21 +597,116 @@ const searchStock = async () => {
   fetchHistory(symbol);
 };
 
+if (!user) {
+
+  return (
+
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+
+      <div className="text-center">
+
+        <h1 className="text-5xl font-bold">
+          StockPulse AI
+        </h1>
+
+        <p className="mt-5 text-slate-400">
+          Please login to continue.
+        </p>
+
+        <div className="mt-6 flex gap-4 justify-center">
+
+          <Link
+            to="/login"
+            className="bg-blue-600 px-5 py-3 rounded-xl"
+          >
+            Login
+          </Link>
+
+          <Link
+            to="/register"
+            className="bg-green-600 px-5 py-3 rounded-xl"
+          >
+            Register
+          </Link>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
+
+}
   return (
 
     <div className="min-h-screen bg-slate-950 text-white p-6 md:p-10">
 
-      <h1 className="text-5xl font-bold">
-        StockPulse AI
-      </h1>
+      <div className="flex justify-between items-center flex-wrap gap-4">
 
-      <p className="text-slate-400 mt-3">
-        Predict • Analyze • Invest Smarter
-      </p>
+  <div>
 
-      <p className="text-green-400 mt-2">
-        Last Updated: {lastUpdated}
-      </p>
+    <h1 className="text-5xl font-bold">
+      StockPulse AI
+    </h1>
+
+    <p className="text-slate-400 mt-3">
+      Predict • Analyze • Invest Smarter
+    </p>
+
+    <p className="text-green-400 mt-2">
+      Last Updated: {lastUpdated}
+    </p>
+
+  </div>
+
+  <div>
+
+    {user ? (
+
+      <div className="flex items-center gap-4">
+
+        <span>
+          Welcome,
+          <strong className="ml-1">
+            {user.name}
+          </strong>
+        </span>
+
+        <button
+          onClick={logout}
+          className="bg-red-600 px-4 py-2 rounded-xl"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    ) : (
+
+      <div className="flex gap-3">
+
+        <Link
+          to="/login"
+          className="bg-blue-600 px-4 py-2 rounded-xl"
+        >
+          Login
+        </Link>
+
+        <Link
+          to="/register"
+          className="bg-green-600 px-4 py-2 rounded-xl"
+        >
+          Register
+        </Link>
+
+      </div>
+
+    )}
+
+  </div>
+
+</div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
 
