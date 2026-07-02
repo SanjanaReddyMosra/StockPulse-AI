@@ -1,0 +1,23 @@
+header{
+
+height:72px;
+
+background:
+
+rgba(17,24,39,.9);
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+padding:0 40px;
+
+border-bottom:
+
+1px solid var(--border);
+
+backdrop-filter:blur(20px);
+
+}
