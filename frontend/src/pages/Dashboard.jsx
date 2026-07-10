@@ -7,22 +7,33 @@ function Dashboard(){
 return(
 
 <>
+    <Navbar />
 
-<Navbar/>
+    <div className="dashboard-layout">
 
-<Sidebar/>
+        <Sidebar />
 
-<main>
+        <main className="dashboard-content">
 
-<h1>
+            <MarketOverview />
 
-Dashboard
+            <div className="dashboard-grid">
 
-</h1>
+                <Portfolio />
 
-</main>
+                <Watchlist />
 
-<Footer/>
+                <News />
+
+                <Charts />
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <Footer />
 
 </>
 

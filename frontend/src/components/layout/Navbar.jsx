@@ -2,14 +2,30 @@ function Navbar(){
 
 return(
 
-<header>
+<header className="navbar">
 
-<h2>StockPulse AI</h2>
+    <div className="logo">
+        StockPulse AI
+    </div>
+
+    <div className="search">
+
+        <input
+            placeholder="Search stocks..."
+        />
+
+    </div>
+
+    <div className="navbar-right">
+
+        Notification Icon
+
+        User Avatar
+
+    </div>
 
 </header>
 
 )
 
-}
-
-export default Navbar
+export default Navbar;

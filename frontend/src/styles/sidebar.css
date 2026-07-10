@@ -1,23 +1,93 @@
-aside{
+.sidebar{
 
-width:240px;
+width:260px;
 
 height:100vh;
 
-background:
-
-#0F172A;
-
-padding:30px;
-
-border-right:
-
-1px solid var(--border);
+background:#0F172A;
 
 position:fixed;
 
 left:0;
 
-top:72px;
+top:0;
+
+padding:30px 20px;
+
+border-right:1px solid #1E293B;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.sidebar-logo{
+
+color:white;
+
+font-size:26px;
+
+margin-bottom:40px;
+
+}
+
+.sidebar ul{
+
+list-style:none;
+
+padding:0;
+
+margin:0;
+
+flex:1;
+
+}
+
+.sidebar-item{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding:15px;
+
+margin-bottom:12px;
+
+border-radius:12px;
+
+cursor:pointer;
+
+color:#CBD5E1;
+
+transition:.3s;
+
+}
+
+.sidebar-item:hover{
+
+background:#1E293B;
+
+color:white;
+
+}
+
+.logout{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding:15px;
+
+border-top:1px solid #334155;
+
+cursor:pointer;
+
+color:#EF4444;
 
 }

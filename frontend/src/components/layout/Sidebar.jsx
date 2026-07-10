@@ -1,29 +1,66 @@
-function Sidebar(){
+import {
+  FaChartLine,
+  FaBriefcase,
+  FaBookmark,
+  FaNewspaper,
+  FaCog,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
-return(
+import "../../styles/sidebar.css";
 
-<aside>
+function Sidebar() {
+  return (
+    <aside className="sidebar">
 
-<ul>
+      <h2 className="sidebar-logo">
+        StockPulse AI
+      </h2>
 
-<li>Dashboard</li>
+      <ul>
 
-<li>Market</li>
+        <li className="sidebar-item">
+          <FaChartLine />
+          <span>Dashboard</span>
+        </li>
 
-<li>Portfolio</li>
+        <li className="sidebar-item">
+          <FaChartLine />
+          <span>Market</span>
+        </li>
 
-<li>Watchlist</li>
+        <li className="sidebar-item">
+          <FaBriefcase />
+          <span>Portfolio</span>
+        </li>
 
-<li>News</li>
+        <li className="sidebar-item">
+          <FaBookmark />
+          <span>Watchlist</span>
+        </li>
 
-<li>Settings</li>
+        <li className="sidebar-item">
+          <FaNewspaper />
+          <span>News</span>
+        </li>
 
-</ul>
+        <li className="sidebar-item">
+          <FaCog />
+          <span>Settings</span>
+        </li>
 
-</aside>
+      </ul>
 
-)
+      <div className="logout">
 
+        <FaSignOutAlt />
+
+        <span>Logout</span>
+
+      </div>
+
+    </aside>
+  );
 }
 
-export default Sidebar
+export default Sidebar;
