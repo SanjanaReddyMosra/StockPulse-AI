@@ -7,18 +7,20 @@
 --danger:#EF4444;
 --warning:#F59E0B;
 
---background:#030712;
---surface:#111827;
+--background:#020617;
+--surface:#0F172A;
 --surface-light:#1E293B;
-
---border:#334155;
 
 --text:#F8FAFC;
 --muted:#94A3B8;
 
---shadow:
-0 10px 30px rgba(0,0,0,.35);
+--border:#334155;
 
 --radius:16px;
+
+--shadow:
+0 15px 40px rgba(0,0,0,.35);
+
+--transition:.3s ease;
 
 }
