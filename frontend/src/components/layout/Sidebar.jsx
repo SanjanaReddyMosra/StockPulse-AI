@@ -26,4 +26,4 @@ return(
 
 }
 
-export default Sidebar
+export default Sidebar;
