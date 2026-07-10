@@ -59,3 +59,26 @@
     color:#3B82F6;
     text-decoration:none;
 }
+.input-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#1E293B;
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:18px;
+    border:1px solid #334155;
+}
+
+.input-group svg{
+    color:#94A3B8;
+}
+
+.input-group input{
+    width:100%;
+    border:none;
+    outline:none;
+    background:none;
+    color:white;
+    font-size:15px;
+}
