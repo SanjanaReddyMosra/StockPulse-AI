@@ -2,43 +2,41 @@ import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
 import Footer from "../components/layout/Footer";
 
-function Dashboard(){
+import MarketOverview from "../components/dashboard/MarketOverview";
+import Portfolio from "../components/dashboard/Portfolio";
+import Watchlist from "../components/dashboard/Watchlist";
+import News from "../components/dashboard/News";
+import Charts from "../components/dashboard/Charts";
 
-return(
+import "../styles/layout.css";
+import "../styles/dashboard.css";
 
-<>
-    <Navbar />
+function Dashboard() {
+  return (
+    <>
+      <Navbar />
 
-    <div className="dashboard-layout">
-
+      <div className="dashboard-layout">
         <Sidebar />
 
         <main className="dashboard-content">
+          <MarketOverview />
 
-            <MarketOverview />
+          <div className="dashboard-grid">
+            <Portfolio />
 
-            <div className="dashboard-grid">
+            <Watchlist />
 
-                <Portfolio />
+            <News />
 
-                <Watchlist />
-
-                <News />
-
-                <Charts />
-
-            </div>
-
+            <Charts />
+          </div>
         </main>
+      </div>
 
-    </div>
-
-    <Footer />
-
-</>
-
-)
-
+      <Footer />
+    </>
+  );
 }
 
 export default Dashboard;

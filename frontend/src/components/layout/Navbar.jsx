@@ -1,31 +1,46 @@
-function Navbar(){
+import { FaBell, FaUserCircle, FaSearch } from "react-icons/fa";
+import "../../styles/navbar.css";
 
-return(
+function Navbar() {
+  return (
+    <header className="navbar">
 
-<header className="navbar">
-
-    <div className="logo">
+      <div className="logo">
         StockPulse AI
-    </div>
+      </div>
 
-    <div className="search">
+      <div className="search">
+
+        <FaSearch className="search-icon" />
 
         <input
-            placeholder="Search stocks..."
+          type="text"
+          placeholder="Search stocks..."
         />
 
-    </div>
+      </div>
 
-    <div className="navbar-right">
+      <div className="navbar-right">
 
-        Notification Icon
+        <FaBell className="nav-icon" />
 
-        User Avatar
+        <div className="user-info">
 
-    </div>
+          <FaUserCircle className="user-avatar" />
 
-</header>
+          <div>
+            <h4>Welcome</h4>
+            const user = JSON.parse(localStorage.getItem("user"));
 
-)
+            <p>{user.name}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+  );
+}
 
 export default Navbar;
