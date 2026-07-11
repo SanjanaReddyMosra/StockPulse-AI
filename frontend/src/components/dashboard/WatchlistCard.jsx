@@ -1,4 +1,4 @@
-function Watchlist() {
+function WatchlistCard() {
   return (
     <div className="dashboard-card">
       <h2>Watchlist</h2>
@@ -7,4 +7,4 @@ function Watchlist() {
   );
 }
 
-export default Watchlist;
+export default WatchlistCard;

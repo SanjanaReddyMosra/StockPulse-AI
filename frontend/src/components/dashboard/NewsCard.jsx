@@ -1,4 +1,4 @@
-function News() {
+function NewsCard() {
   return (
     <div className="dashboard-card">
       <h2>Market News</h2>
@@ -7,4 +7,4 @@ function News() {
   );
 }
 
-export default News;
+export default NewsCard;

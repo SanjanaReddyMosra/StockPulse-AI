@@ -3,9 +3,9 @@ import Sidebar from "../components/layout/Sidebar";
 import Footer from "../components/layout/Footer";
 
 import MarketOverview from "../components/dashboard/MarketOverview";
-import Portfolio from "../components/dashboard/Portfolio";
-import Watchlist from "../components/dashboard/Watchlist";
-import News from "../components/dashboard/News";
+import Portfolio from "../components/dashboard/PortfolioCard";
+import Watchlist from "../components/dashboard/WatchlistCard";
+import News from "../components/dashboard/NewsCard";
 import Charts from "../components/dashboard/Charts";
 
 import "../styles/layout.css";
