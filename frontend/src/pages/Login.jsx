@@ -1,19 +1,30 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { FaEnvelope, FaLock } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
 import API from "../api/stockAPI";
 import "../styles/login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
 
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+
+    setError("");
+    setLoading(true);
 
     try {
       const response = await API.post("/login", {
@@ -27,13 +38,16 @@ export default function Login() {
       );
 
       navigate("/");
+
     } catch (err) {
       setError(
         err.response?.data?.error ||
         err.response?.data?.message ||
-        "Login failed"
+        "Invalid Email or Password"
       );
     }
+
+    setLoading(false);
   };
 
   return (
@@ -42,14 +56,21 @@ export default function Login() {
       <div className="login-card">
 
         <div className="login-logo">
-          <h1>StockPulse AI</h1>
-          <p>AI Powered Indian Stock Market Analytics</p>
+
+          <h1>📈 StockPulse AI</h1>
+
+          <p>
+            AI Powered Indian Stock Market Analytics
+          </p>
+
         </div>
 
         <form onSubmit={handleSubmit}>
 
           <div className="input-group">
-            <FaEnvelope />
+
+            <FaEnvelope className="input-icon" />
+
             <input
               type="email"
               placeholder="Email Address"
@@ -59,12 +80,19 @@ export default function Login() {
               }
               required
             />
+
           </div>
 
           <div className="input-group">
-            <FaLock />
+
+            <FaLock className="input-icon" />
+
             <input
-              type="password"
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
               placeholder="Password"
               value={password}
               onChange={(e) =>
@@ -72,30 +100,65 @@ export default function Login() {
               }
               required
             />
+
+            <button
+              type="button"
+              className="toggle-password"
+              onClick={() =>
+                setShowPassword(
+                  (prev) => !prev
+                )
+              }
+            >
+
+              {showPassword ? (
+                <FaEyeSlash />
+              ) : (
+                <FaEye />
+              )}
+
+            </button>
+
           </div>
 
           {error && (
-            <p className="error">
+
+            <div className="error">
+
               {error}
-            </p>
+
+            </div>
+
           )}
 
           <button
             type="submit"
             className="login-btn"
+            disabled={loading}
           >
-            Login
+
+            {loading
+              ? "Signing In..."
+              : "Login"}
+
           </button>
 
         </form>
 
         <div className="login-footer">
+
           <p>
-            Don't have an account?{" "}
+
+            Don't have an account?
+
             <Link to="/register">
+
               Register
+
             </Link>
+
           </p>
+
         </div>
 
       </div>

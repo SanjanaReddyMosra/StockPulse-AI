@@ -2,6 +2,18 @@ import { FaBell, FaUserCircle, FaSearch } from "react-icons/fa";
 import "../../styles/navbar.css";
 
 function Navbar() {
+    let user = null;
+
+try {
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser && storedUser !== "undefined") {
+    user = JSON.parse(storedUser);
+  }
+} catch (error) {
+  console.error("Invalid user data in localStorage:", error);
+  localStorage.removeItem("user");
+}
   return (
     <header className="navbar">
 
@@ -30,9 +42,8 @@ function Navbar() {
 
           <div>
             <h4>Welcome</h4>
-            const user = JSON.parse(localStorage.getItem("user"));
 
-            <p>{user.name}</p>
+            <p>{user?.name || "Guest"}</p>
           </div>
 
         </div>
