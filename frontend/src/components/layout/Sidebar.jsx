@@ -13,13 +13,25 @@ function Sidebar() {
   return (
     <aside className="sidebar">
 
-      <h2 className="sidebar-logo">
-        StockPulse AI
-      </h2>
+      <div className="sidebar-logo">
+
+        <div className="sidebar-logo-icon">
+          📈
+        </div>
+
+        <div>
+
+          <h2>StockPulse</h2>
+
+          <span>AI Intelligence</span>
+
+        </div>
+
+      </div>
 
       <ul>
 
-        <li className="sidebar-item">
+        <li className="sidebar-item active">
           <FaChartLine />
           <span>Dashboard</span>
         </li>

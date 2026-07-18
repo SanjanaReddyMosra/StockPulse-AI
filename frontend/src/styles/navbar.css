@@ -1,80 +1,132 @@
 .navbar{
-    height:70px;
-    background:#0F172A;
-    border-bottom:1px solid #1E293B;
-
+    height:75px;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     padding:0 30px;
-
     position:sticky;
     top:0;
     z-index:100;
-
     margin-left:260px;
+    box-shadow:var(--shadow);
 }
 
 .logo{
-    color:white;
-    font-size:24px;
-    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo-icon{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+}
+
+.logo-text h2{
+    color:var(--text);
+    font-size:20px;
+    margin:0;
+}
+
+.logo-text span{
+    color:var(--muted);
+    font-size:12px;
 }
 
 .search{
     display:flex;
     align-items:center;
-    background:#1E293B;
-    padding:10px 16px;
-    border-radius:12px;
-    width:350px;
+    width:430px;
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:12px 16px;
+    border-radius:14px;
+    transition:var(--transition);
+}
+
+.search:hover{
+    border-color:var(--primary);
 }
 
 .search input{
     border:none;
     outline:none;
     background:none;
-    color:white;
+    color:var(--text);
     width:100%;
-    margin-left:10px;
+    margin-left:12px;
+}
+
+.search input::placeholder{
+    color:var(--muted);
 }
 
 .search-icon{
-    color:#94A3B8;
+    color:var(--muted);
 }
 
 .navbar-right{
     display:flex;
     align-items:center;
-    gap:25px;
+    gap:24px;
+}
+
+.notification{
+    position:relative;
+    cursor:pointer;
 }
 
 .nav-icon{
-    color:white;
-    font-size:22px;
-    cursor:pointer;
+    color:var(--text);
+    font-size:20px;
+}
+
+.notification-dot{
+    position:absolute;
+    width:10px;
+    height:10px;
+    background:var(--danger);
+    border-radius:50%;
+    right:-2px;
+    top:-2px;
+    border:2px solid var(--surface);
 }
 
 .user-info{
     display:flex;
     align-items:center;
     gap:12px;
+    padding:8px 12px;
+    border-radius:12px;
+    transition:.3s;
+    cursor:pointer;
+}
+
+.user-info:hover{
+    background:var(--card);
 }
 
 .user-avatar{
-    font-size:38px;
-    color:#3B82F6;
+    color:var(--primary);
+    font-size:42px;
 }
 
 .user-info h4{
-    color:white;
-    margin:0;
+    color:var(--text);
     font-size:14px;
+    margin:0;
 }
 
 .user-info p{
-    color:#94A3B8;
-    margin:0;
+    color:var(--muted);
     font-size:13px;
+    margin:0;
 }
