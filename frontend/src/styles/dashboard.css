@@ -897,3 +897,88 @@ grid-template-columns:1fr;
     }
 
 }
+
+/* ===========================
+   AI PREDICTION
+=========================== */
+
+.prediction-card{
+    display:flex;
+    flex-direction:column;
+}
+
+.prediction-buy,
+.prediction-sell,
+.prediction-hold{
+
+    margin:20px 0;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:24px;
+
+    font-weight:700;
+
+}
+
+.prediction-buy{
+
+    background:rgba(34,197,94,.15);
+
+    color:var(--success);
+
+}
+
+.prediction-sell{
+
+    background:rgba(239,68,68,.15);
+
+    color:var(--danger);
+
+}
+
+.prediction-hold{
+
+    background:rgba(245,158,11,.15);
+
+    color:var(--warning);
+
+}
+
+.prediction-details{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+    margin-bottom:24px;
+
+}
+
+.prediction-details span{
+
+    color:var(--muted);
+
+    font-size:13px;
+
+}
+
+.prediction-details h3{
+
+    margin-top:8px;
+
+    font-size:22px;
+
+}

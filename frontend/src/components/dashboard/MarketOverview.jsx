@@ -1,27 +1,58 @@
+import { useEffect, useState } from "react";
 import {
   FaArrowTrendUp,
   FaArrowTrendDown,
   FaRobot,
 } from "react-icons/fa6";
 
+import { getStock, getRecommendation } from "../../api/stockAPI";
+
 import "../../styles/dashboard.css";
 
 function MarketOverview() {
+  const [stock, setStock] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
+
+  const loadData = async () => {
+    try {
+      const symbol =
+        localStorage.getItem("selectedStock") || "TCS";
+
+      const stockData = await getStock(symbol);
+      const recommendationData = await getRecommendation(symbol);
+
+      setStock(stockData);
+      setRecommendation(recommendationData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+
+    window.addEventListener("stockChanged", loadData);
+
+    return () =>
+      window.removeEventListener(
+        "stockChanged",
+        loadData
+      );
+  }, []);
+
   return (
     <section className="hero-section">
-
       <div className="hero-left">
-
         <span className="hero-tag">
           AI Powered Stock Intelligence
         </span>
 
-        <h1>
-          Good Evening 👋
-        </h1>
+        <h1>Good Evening 👋</h1>
 
         <h2>
-          Welcome back, Investor
+          {stock
+            ? `Tracking ${stock.symbol}`
+            : "Loading..."}
         </h2>
 
         <p>
@@ -31,111 +62,89 @@ function MarketOverview() {
         </p>
 
         <div className="market-grid">
-
           <div className="market-card">
-
-            <h3>NIFTY 50</h3>
+            <h3>{stock?.symbol || "TCS"}</h3>
 
             <span className="price">
-              24,821
+              ₹{stock?.price ?? "--"}
             </span>
 
-            <div className="positive market-change">
+            <div
+              className={
+                stock?.change >= 0
+                  ? "positive market-change"
+                  : "negative market-change"
+              }
+            >
+              {stock?.change >= 0 ? (
+                <FaArrowTrendUp />
+              ) : (
+                <FaArrowTrendDown />
+              )}
 
-              <FaArrowTrendUp />
-
-              +0.84%
-
+              {stock?.change ?? 0}%
             </div>
-
           </div>
 
           <div className="market-card">
-
-            <h3>SENSEX</h3>
+            <h3>High</h3>
 
             <span className="price">
-              81,432
+              ₹{stock?.high ?? "--"}
             </span>
-
-            <div className="positive market-change">
-
-              <FaArrowTrendUp />
-
-              +0.71%
-
-            </div>
-
           </div>
 
           <div className="market-card">
-
-            <h3>BANK NIFTY</h3>
+            <h3>Low</h3>
 
             <span className="price">
-              56,120
+              ₹{stock?.low ?? "--"}
             </span>
-
-            <div className="negative market-change">
-
-              <FaArrowTrendDown />
-
-              -0.18%
-
-            </div>
-
           </div>
-
         </div>
-
       </div>
 
       <div className="hero-right">
-
         <div className="ai-card">
-
           <div className="ai-icon">
-
             <FaRobot />
-
           </div>
 
           <span className="ai-title">
-
             AI Recommendation
-
           </span>
 
-          <h2>BUY</h2>
+          <h2>
+            {recommendation?.signal || "HOLD"}
+          </h2>
 
-          <h3>TCS</h3>
+          <h3>
+            {stock?.symbol || "TCS"}
+          </h3>
 
           <div className="confidence">
-
             Confidence
 
-            <strong>94%</strong>
-
+            <strong>
+              {recommendation?.confidence ?? "--"}%
+            </strong>
           </div>
 
           <div className="expected-return">
+            Target Price
 
-            Expected Return
-
-            <span>+8.2%</span>
-
+            <span>
+              ₹
+              {recommendation?.target_price ??
+                "--"}
+            </span>
           </div>
 
           <button className="analyze-btn">
-
             Analyze Stock
-
           </button>
-
         </div>
-
       </div>
-
     </section>
   );
 }
