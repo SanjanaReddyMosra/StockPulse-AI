@@ -1,29 +1,138 @@
-function Sidebar(){
+import {
+  FaChartLine,
+  FaBriefcase,
+  FaBookmark,
+  FaNewspaper,
+  FaCog,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
-return(
+import { NavLink, useNavigate } from "react-router-dom";
 
-<aside>
+import "../../styles/sidebar.css";
 
-<ul>
+function Sidebar() {
+  const navigate = useNavigate();
 
-<li>Dashboard</li>
+  const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("selectedStock");
+    navigate("/login");
+  };
 
-<li>Market</li>
+  return (
+    <aside className="sidebar">
 
-<li>Portfolio</li>
+      <div className="sidebar-logo">
+        <div className="sidebar-logo-icon">
+          📈
+        </div>
 
-<li>Watchlist</li>
+        <div>
+          <h2>StockPulse</h2>
+          <span>AI Intelligence</span>
+        </div>
+      </div>
 
-<li>News</li>
+      <ul>
 
-<li>Settings</li>
+        <li>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar-item active"
+                : "sidebar-item"
+            }
+          >
+            <FaChartLine />
+            <span>Dashboard</span>
+          </NavLink>
+        </li>
 
-</ul>
+        <li>
+          <NavLink
+            to="/market"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar-item active"
+                : "sidebar-item"
+            }
+          >
+            <FaChartLine />
+            <span>Market</span>
+          </NavLink>
+        </li>
 
-</aside>
+        <li>
+          <NavLink
+            to="/portfolio"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar-item active"
+                : "sidebar-item"
+            }
+          >
+            <FaBriefcase />
+            <span>Portfolio</span>
+          </NavLink>
+        </li>
 
-)
+        <li>
+          <NavLink
+            to="/watchlist"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar-item active"
+                : "sidebar-item"
+            }
+          >
+            <FaBookmark />
+            <span>Watchlist</span>
+          </NavLink>
+        </li>
 
+        <li>
+          <NavLink
+            to="/news"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar-item active"
+                : "sidebar-item"
+            }
+          >
+            <FaNewspaper />
+            <span>News</span>
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar-item active"
+                : "sidebar-item"
+            }
+          >
+            <FaCog />
+            <span>Settings</span>
+          </NavLink>
+        </li>
+
+      </ul>
+
+      <button
+        className="logout"
+        onClick={logout}
+      >
+        <FaSignOutAlt />
+
+        <span>Logout</span>
+      </button>
+
+    </aside>
+  );
 }
 
 export default Sidebar;

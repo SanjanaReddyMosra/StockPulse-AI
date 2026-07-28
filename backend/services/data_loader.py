@@ -31,3 +31,4 @@ def get_history(symbol):
     except Exception as e:
         print("Error:", e)
         return None
+    
