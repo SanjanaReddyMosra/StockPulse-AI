@@ -932,3 +932,131 @@ grid-template-columns:1fr;
     font-size:22px;
 
 }
+/* ===========================
+   DASHBOARD SECTIONS
+=========================== */
+
+.dashboard-content{
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+    gap:24px;
+}
+
+/* ===========================
+   STOCK DETAILS
+=========================== */
+
+.stock-details-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:24px;
+    box-shadow:var(--shadow);
+}
+
+.stock-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:18px;
+    margin-top:20px;
+}
+
+.stock-item{
+    background:rgba(255,255,255,.03);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    transition:.3s;
+}
+
+.stock-item:hover{
+    transform:translateY(-5px);
+    border:1px solid var(--primary);
+}
+
+.stock-item span{
+    display:block;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:10px;
+}
+
+.stock-item h3{
+    margin:0;
+    font-size:22px;
+    font-weight:700;
+}
+
+/* ===========================
+   CHART CARD
+=========================== */
+
+.chart-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:24px;
+    box-shadow:var(--shadow);
+}
+
+/* ===========================
+   AI INSIGHTS
+=========================== */
+
+.ai-insights-card{
+    background:linear-gradient(180deg,#1e293b,#162033);
+    border-radius:22px;
+    padding:28px;
+    border:1px solid var(--border);
+}
+
+.ai-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:18px;
+    margin-top:20px;
+}
+
+.ai-box{
+    background:rgba(255,255,255,.05);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+}
+
+.ai-box span{
+    color:var(--muted);
+    display:block;
+    margin-bottom:8px;
+}
+
+.ai-box h3{
+    margin:0;
+    font-size:22px;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .stock-grid{
+        grid-template-columns:1fr;
+    }
+
+    .ai-grid{
+        grid-template-columns:1fr;
+    }
+
+}

@@ -5,8 +5,10 @@ import Footer from "../components/layout/Footer";
 import MarketOverview from "../components/dashboard/MarketOverview";
 import Portfolio from "../components/dashboard/PortfolioCard";
 import Watchlist from "../components/dashboard/WatchlistCard";
-import News from "../components/dashboard/NewsCard";
+import AIInsights from "../components/dashboard/AIInsights";
 import Charts from "../components/dashboard/Charts";
+import StockDetails from "../components/dashboard/StockDetails";
+import News from "../components/dashboard/NewsCard";
 
 import "../styles/layout.css";
 import "../styles/dashboard.css";
@@ -20,17 +22,26 @@ function Dashboard() {
         <Sidebar />
 
         <main className="dashboard-content">
+          {/* Hero Section */}
           <MarketOverview />
 
+          {/* Portfolio & Watchlist */}
           <div className="dashboard-grid">
             <Portfolio />
-
             <Watchlist />
-
-            <News />
-
-            <Charts />
           </div>
+
+          {/* AI Recommendation */}
+          <AIInsights />
+
+          {/* Price History */}
+          <Charts />
+
+          {/* Technical Details */}
+          <StockDetails />
+
+          {/* Latest News */}
+          <News />
         </main>
       </div>
 
