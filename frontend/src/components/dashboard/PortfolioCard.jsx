@@ -1,50 +1,91 @@
-import {
-  FaWallet,
-  FaArrowTrendUp,
-  FaChartPie,
-} from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { FaWallet } from "react-icons/fa";
+import { getPortfolio } from "../../api/stockAPI";
 
 function PortfolioCard() {
+  const [portfolio, setPortfolio] = useState(null);
+
+  useEffect(() => {
+    loadPortfolio();
+  }, []);
+
+  async function loadPortfolio() {
+    try {
+      const data = await getPortfolio();
+      setPortfolio(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  if (!portfolio) {
+    return (
+      <div className="dashboard-card">
+        <h2>Portfolio</h2>
+        <p>Loading portfolio...</p>
+      </div>
+    );
+  }
+
+  const profit =
+    portfolio.current_value -
+    portfolio.invested;
+
+  const profitPercent =
+    ((profit / portfolio.invested) * 100).toFixed(2);
+
   return (
     <div className="dashboard-card portfolio-card">
 
-      <div className="card-header">
+      <div className="portfolio-header">
 
-        <div className="card-title">
+        <h2>
 
-          <FaWallet className="card-icon" />
+          <FaWallet />
 
-          <h2>Portfolio</h2>
+          Portfolio
 
-        </div>
+        </h2>
 
-        <span className="card-badge">
-          Live
+        <span className="live-tag">
+
+          LIVE
+
         </span>
 
       </div>
 
-      <div className="portfolio-value">
+      <h1>
 
-        ₹1,25,430
+        ₹{portfolio.current_value.toLocaleString()}
+
+      </h1>
+
+      <div
+        className={
+          profit >= 0
+            ? "positive"
+            : "negative"
+        }
+      >
+
+        ₹{profit.toLocaleString()}
+
+        ({profitPercent}%)
 
       </div>
 
-      <div className="portfolio-profit">
-
-        <FaArrowTrendUp />
-
-        +₹2,845 (+2.31%)
-
-      </div>
-
-      <div className="portfolio-stats">
+      <div className="portfolio-info">
 
         <div>
 
           <span>Invested</span>
 
-          <h3>₹1,10,000</h3>
+          <strong>
+
+            ₹{portfolio.invested.toLocaleString()}
+
+          </strong>
 
         </div>
 
@@ -52,15 +93,17 @@ function PortfolioCard() {
 
           <span>Holdings</span>
 
-          <h3>12 Stocks</h3>
+          <strong>
+
+            {portfolio.total_stocks}
+
+          </strong>
 
         </div>
 
       </div>
 
-      <button className="card-button">
-
-        <FaChartPie />
+      <button className="portfolio-btn">
 
         View Portfolio
 

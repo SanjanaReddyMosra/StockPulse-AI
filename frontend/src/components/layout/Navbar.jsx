@@ -91,7 +91,17 @@ JSON.stringify(saved)
   return (
     <header className="navbar">
       <div className="logo">
-        <div className="logo-icon">📈</div>
+        <div className="logo-icon">
+
+<img
+
+src="/logo.png"
+
+alt="StockPulse"
+
+/>
+
+</div>
 
         <div className="logo-text">
           <h2>StockPulse</h2>

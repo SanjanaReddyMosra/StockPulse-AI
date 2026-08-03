@@ -35,4 +35,9 @@ export const getStocks = async () => {
   return data;
 };
 
+export const getPortfolio = async () => {
+  const { data } = await API.get("/portfolio");
+  return data;
+};
+
 export default API;

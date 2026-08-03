@@ -3,9 +3,10 @@
 display:grid;
 
 grid-template-columns:
-repeat(auto-fit,minmax(340px,1fr));
 
-gap:24px;
+repeat(auto-fit,minmax(360px,1fr));
+
+gap:25px;
 
 margin-top:30px;
 
@@ -1402,5 +1403,300 @@ font-size:14px;
 .remove-icon:hover{
 
 transform:scale(1.2);
+
+}
+.portfolio-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:18px;
+
+}
+
+.live-tag{
+
+background:#16a34a;
+
+padding:5px 10px;
+
+border-radius:20px;
+
+font-size:12px;
+
+color:white;
+
+font-weight:600;
+
+}
+
+.portfolio-info{
+
+display:flex;
+
+justify-content:space-between;
+
+margin:22px 0;
+
+}
+
+.portfolio-info span{
+
+display:block;
+
+font-size:13px;
+
+color:#94A3B8;
+
+}
+
+.portfolio-info strong{
+
+font-size:18px;
+
+}
+
+.portfolio-btn{
+
+width:100%;
+
+padding:12px;
+
+border:none;
+
+border-radius:12px;
+
+background:#2563EB;
+
+color:white;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.portfolio-btn:hover{
+
+background:#1d4ed8;
+
+}
+.apexcharts-tooltip{
+
+background:#0f172a !important;
+
+color:white !important;
+
+border:none !important;
+
+}
+
+.apexcharts-menu{
+
+background:#0f172a !important;
+
+}
+.signals-list{
+
+display:flex;
+
+flex-direction:column;
+
+gap:16px;
+
+margin-top:20px;
+
+}
+
+.signal-item{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:15px;
+
+background:#0f172a;
+
+border-radius:14px;
+
+transition:.3s;
+
+}
+
+.signal-item:hover{
+
+background:#1e293b;
+
+}
+
+.signal-badge{
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
+padding:8px 14px;
+
+border-radius:20px;
+
+font-size:13px;
+
+font-weight:700;
+
+color:white;
+
+}
+
+.signal-badge.buy{
+
+background:#16a34a;
+
+}
+
+.signal-badge.sell{
+
+background:#dc2626;
+
+}
+
+.signal-badge.hold{
+
+background:#f59e0b;
+
+}
+/* ===========================
+   CARD HOVER EFFECT
+=========================== */
+
+.dashboard-card{
+
+transition:
+transform .35s ease,
+box-shadow .35s ease,
+border-color .35s ease;
+
+}
+
+.dashboard-card:hover{
+
+transform:translateY(-8px);
+
+box-shadow:
+0 20px 45px rgba(0,0,0,.35);
+
+border-color:
+rgba(59,130,246,.45);
+
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar{
+
+width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+background:#020617;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#2563EB;
+
+border-radius:30px;
+
+}
+
+/* ===========================
+   FADE ANIMATION
+=========================== */
+
+.fade-up{
+
+animation:
+fadeUp .6s ease;
+
+}
+
+@keyframes fadeUp{
+
+from{
+
+opacity:0;
+
+transform:
+translateY(25px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:
+translateY(0);
+
+}
+
+}
+
+/* ===========================
+   SKELETON LOADER
+=========================== */
+
+.skeleton{
+
+height:18px;
+
+border-radius:8px;
+
+background:
+
+linear-gradient(
+90deg,
+#1e293b 25%,
+#334155 50%,
+#1e293b 75%
+);
+
+background-size:
+300% 100%;
+
+animation:
+loading 1.5s infinite;
+
+}
+
+@keyframes loading{
+
+0%{
+
+background-position:
+100% 0;
+
+}
+
+100%{
+
+background-position:
+-100% 0;
+
+}
 
 }

@@ -10,6 +10,8 @@ import Charts from "../components/dashboard/Charts";
 import StockDetails from "../components/dashboard/StockDetails";
 import News from "../components/dashboard/NewsCard";
 import WelcomeBanner from "../components/dashboard/WelcomeBanner";
+import PortfolioChart from "../components/dashboard/PortfolioChart";
+import RecentSignals from "../components/dashboard/RecentSignals";
 import "../styles/layout.css";
 import "../styles/dashboard.css";
 
@@ -28,14 +30,15 @@ function Dashboard() {
           <MarketOverview />
 
           {/* Portfolio & Watchlist */}
-          <div className="dashboard-grid">
+          <div className="dashboard-grid fade-up">
             <Portfolio />
+            <PortfolioChart />
             <Watchlist />
           </div>
 
           {/* AI Recommendation */}
           <AIInsights />
-
+          <RecentSignals />
           {/* Price History */}
           <Charts />
 
