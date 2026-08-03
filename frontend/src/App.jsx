@@ -7,6 +7,7 @@ import {
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Portfolio from "./pages/Portfolio";
 
 function ProtectedRoute({ children }) {
 
@@ -45,6 +46,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/portfolio"
+  element={
+    <ProtectedRoute>
+      <Portfolio />
+    </ProtectedRoute>
+  }
+/>
 
     </Routes>
 

@@ -39,5 +39,12 @@ export const getPortfolio = async () => {
   const { data } = await API.get("/portfolio");
   return data;
 };
+export const savePortfolio = async (data) => {
+  const response = await API.post(
+    "/portfolio",
+    data
+  );
 
+  return response.data;
+};
 export default API;
