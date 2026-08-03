@@ -65,7 +65,26 @@ function Navbar() {
     setFiltered([]);
 
     localStorage.setItem("selectedStock", symbol);
+    const saved =
+JSON.parse(
+localStorage.getItem("watchlist")
+)||[];
 
+if(
+!saved.includes(symbol)
+){
+
+saved.unshift(symbol);
+
+localStorage.setItem(
+
+"watchlist",
+
+JSON.stringify(saved)
+
+);
+
+}
     window.dispatchEvent(new Event("stockChanged"));
   };
 

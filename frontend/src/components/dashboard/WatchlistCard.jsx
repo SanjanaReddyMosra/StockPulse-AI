@@ -1,101 +1,187 @@
+import { useEffect, useState } from "react";
 import {
-  FaStar,
-  FaArrowTrendUp,
-  FaArrowTrendDown,
-} from "react-icons/fa6";
+  FaBookmark,
+  FaTrash,
+} from "react-icons/fa";
 
-const watchlist = [
-  {
-    symbol: "RELIANCE",
-    price: "₹2,948",
-    change: "+1.24%",
-    positive: true,
-  },
-  {
-    symbol: "TCS",
-    price: "₹3,890",
-    change: "+0.61%",
-    positive: true,
-  },
-  {
-    symbol: "INFY",
-    price: "₹1,610",
-    change: "-0.82%",
-    positive: false,
-  },
-  {
-    symbol: "HDFCBANK",
-    price: "₹1,825",
-    change: "+0.42%",
-    positive: true,
-  },
-];
+import { getStock } from "../../api/stockAPI";
 
 function WatchlistCard() {
-  return (
-    <div className="dashboard-card">
 
-      <div className="card-header">
+  const [watchlist, setWatchlist] =
+    useState([]);
 
-        <div className="card-title">
+  useEffect(() => {
 
-          <FaStar className="card-icon" />
+    loadWatchlist();
 
-          <h2>Watchlist</h2>
+    window.addEventListener(
+      "stockChanged",
+      loadWatchlist
+    );
 
-        </div>
+    return () =>
+      window.removeEventListener(
+        "stockChanged",
+        loadWatchlist
+      );
 
-        <span className="card-badge">
+  }, []);
 
-          {watchlist.length} Stocks
+  async function loadWatchlist() {
 
-        </span>
+    const saved =
+      JSON.parse(
+        localStorage.getItem("watchlist")
+      ) || [
+        "TCS",
+        "RELIANCE",
+        "INFY",
+        "HDFCBANK",
+      ];
 
-      </div>
+    const data = await Promise.all(
 
-      <div className="watchlist-container">
+      saved.map(async (symbol) => {
 
-        {watchlist.map((stock) => (
+        try{
 
-          <div
-            className="watch-item"
-            key={stock.symbol}
-          >
+          return await getStock(symbol);
 
-            <div>
+        }
 
-              <h3>{stock.symbol}</h3>
+        catch{
 
-              <span>{stock.price}</span>
+          return null;
 
-            </div>
+        }
 
-            <div
-              className={
-                stock.positive
-                  ? "positive watch-change"
-                  : "negative watch-change"
-              }
-            >
+      })
 
-              {stock.positive ? (
-                <FaArrowTrendUp />
-              ) : (
-                <FaArrowTrendDown />
-              )}
+    );
 
-              {stock.change}
+    setWatchlist(
+      data.filter(Boolean)
+    );
 
-            </div>
+  }
 
-          </div>
+  function removeStock(symbol){
 
-        ))}
+    const updated =
+      watchlist
+        .filter(
+          s=>s.symbol!==symbol
+        )
+        .map(
+          s=>s.symbol
+        );
 
-      </div>
+    localStorage.setItem(
+      "watchlist",
+      JSON.stringify(updated)
+    );
 
-    </div>
+    loadWatchlist();
+
+  }
+
+  function selectStock(symbol){
+
+    localStorage.setItem(
+      "selectedStock",
+      symbol
+    );
+
+    window.dispatchEvent(
+      new Event("stockChanged")
+    );
+
+  }
+
+  return(
+
+<div className="dashboard-card">
+
+<h2>
+
+<FaBookmark/>
+
+Watchlist
+
+</h2>
+
+<div className="watchlist-items">
+
+{
+
+watchlist.map(stock=>(
+
+<div
+
+key={stock.symbol}
+
+className="watch-item"
+
+>
+
+<div
+className="watch-info"
+
+onClick={()=>selectStock(stock.symbol)}
+
+>
+
+<strong>
+
+{stock.symbol}
+
+</strong>
+
+<span>
+
+₹{stock.price}
+
+</span>
+
+</div>
+
+<div
+className={
+stock.percent>=0
+?
+"positive"
+:
+"negative"
+}
+>
+
+{stock.percent>0?"+":""}
+
+{stock.percent.toFixed(2)}%
+
+</div>
+
+<FaTrash
+
+className="remove-icon"
+
+onClick={()=>removeStock(stock.symbol)}
+
+/>
+
+</div>
+
+))
+
+}
+
+</div>
+
+</div>
+
   );
+
 }
 
 export default WatchlistCard;

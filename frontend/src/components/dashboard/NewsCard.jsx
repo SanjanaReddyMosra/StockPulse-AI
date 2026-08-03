@@ -1,96 +1,108 @@
-import {
-  FaStar,
-  FaArrowTrendUp,
-  FaArrowTrendDown,
-} from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { FaNewspaper, FaExternalLinkAlt } from "react-icons/fa";
+import { getNews } from "../../api/stockAPI";
 
-const watchlist = [
-  {
-    symbol: "RELIANCE",
-    price: "₹2,948",
-    change: "+1.24%",
-    positive: true,
-  },
-  {
-    symbol: "TCS",
-    price: "₹3,890",
-    change: "+0.61%",
-    positive: true,
-  },
-  {
-    symbol: "INFY",
-    price: "₹1,610",
-    change: "-0.82%",
-    positive: false,
-  },
-  {
-    symbol: "HDFCBANK",
-    price: "₹1,825",
-    change: "+0.42%",
-    positive: true,
-  },
-];
+function NewsCard() {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-function WatchlistCard() {
+  useEffect(() => {
+    loadNews();
+
+    window.addEventListener(
+      "stockChanged",
+      loadNews
+    );
+
+    return () =>
+      window.removeEventListener(
+        "stockChanged",
+        loadNews
+      );
+  }, []);
+
+  async function loadNews() {
+    try {
+      setLoading(true);
+
+      const symbol =
+        localStorage.getItem("selectedStock") || "TCS";
+
+      const data = await getNews(symbol);
+
+      setArticles(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="dashboard-card">
+        <h2>Latest News</h2>
+        <p>Loading latest news...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-card">
+    <div className="dashboard-card news-card">
 
       <div className="card-header">
 
-        <div className="card-title">
+        <h2>
 
-          <FaStar className="card-icon" />
+          <FaNewspaper />
 
-          <h2>Watchlist</h2>
+          Latest News
 
-        </div>
-
-        <span className="card-badge">
-
-          {watchlist.length} Stocks
-
-        </span>
+        </h2>
 
       </div>
 
-      <div className="watchlist-container">
+      <div className="news-list">
 
-        {watchlist.map((stock) => (
-
-          <div
-            className="watch-item"
-            key={stock.symbol}
-          >
-
-            <div>
-
-              <h3>{stock.symbol}</h3>
-
-              <span>{stock.price}</span>
-
-            </div>
-
-            <div
-              className={
-                stock.positive
-                  ? "positive watch-change"
-                  : "negative watch-change"
-              }
+        {articles.length > 0 ? (
+          articles.slice(0, 5).map((article, index) => (
+            <a
+              key={index}
+              href={article.url}
+              target="_blank"
+              rel="noreferrer"
+              className="news-item"
             >
 
-              {stock.positive ? (
-                <FaArrowTrendUp />
-              ) : (
-                <FaArrowTrendDown />
-              )}
+              <img
+                src={
+                  article.image ||
+                  "https://placehold.co/120x80?text=News"
+                }
+                alt={article.title}
+              />
 
-              {stock.change}
+              <div className="news-content">
 
-            </div>
+                <h4>{article.title}</h4>
 
-          </div>
+                <p>{article.source}</p>
 
-        ))}
+                <span>
+                  {new Date(
+                    article.published
+                  ).toLocaleDateString()}
+                </span>
+
+              </div>
+
+              <FaExternalLinkAlt />
+
+            </a>
+          ))
+        ) : (
+          <p>No news available.</p>
+        )}
 
       </div>
 
@@ -98,4 +110,4 @@ function WatchlistCard() {
   );
 }
 
-export default WatchlistCard;
+export default NewsCard;
